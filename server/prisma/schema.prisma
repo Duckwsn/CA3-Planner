@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users  User[]
+  boards Board[]
+  teams  Team[]
+
+  @@map("organizations")
+}
+
+model User {
+  id              String       @id @default(uuid())
+  name            String
+  email           String       @unique
+  password        String
+  role            String       @default("Membro")
+  avatar          String       @default("")
+  organizationId  String       @map("organization_id")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  organization  Organization   @relation(fields: [organizationId], references: [id])
+  boards        Board[]
+  comments      Comment[]
+  attachments   Attachment[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Board {
+  id              String   @id @default(uuid())
+  title           String
+  description     String   @default("")
+  color           String   @default("#2563eb")
+  userId          String   @map("user_id")
+  organizationId  String   @map("organization_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organizationId], references: [id])
+  tasks        Task[]
+
+  @@map("boards")
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  boardId     String   @map("board_id")
+  title       String
+  description String   @default("")
+  status      String   @default("todo")
+  priority    String   @default("medium")
+  assignee    String   @default("")
+  dueDate     String   @default("") @map("due_date")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  board       Board        @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  comments    Comment[]
+  attachments Attachment[]
+  checklist   ChecklistItem[]
+
+  @@map("tasks")
+}
+
+model Team {
+  id              String   @id @default(uuid())
+  name            String
+  description     String   @default("")
+  organizationId  String   @map("organization_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  members      TeamMember[]
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id     String @id @default(uuid())
+  teamId String @map("team_id")
+  name   String
+  email  String @default("")
+  role   String @default("")
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@map("team_members")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  type      String
+  title     String
+  message   String
+  link      String   @default("")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model ChecklistItem {
+  id        String   @id @default(uuid())
+  taskId    String   @map("task_id")
+  text      String
+  checked   Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@map("checklist_items")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  taskId    String   @map("task_id")
+  userId    String   @map("user_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+}
+
+model Attachment {
+  id        String   @id @default(uuid())
+  taskId    String   @map("task_id")
+  userId    String   @map("user_id")
+  name      String
+  size      Int
+  type      String
+  url       String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("attachments")
+}
