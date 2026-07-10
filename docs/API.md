@@ -1,6 +1,7 @@
 # API Reference — CA3 Planner
 
-Base URL: `http://localhost:3001/api`
+Base URL (desenvolvimento): `http://localhost:3001/api`
+Base URL (produção): `{same-origin}/api` — configurado via `VITE_API_URL=/api`
 
 Autenticação via `Authorization: Bearer <token>` (exceto login/register).
 
@@ -15,6 +16,7 @@ Autenticação via `Authorization: Bearer <token>` (exceto login/register).
 - [Comentários](#comentários)
 - [Checklist](#checklist)
 - [Anexos](#anexos)
+- [Notificações](#notificações)
 - [Health Check](#health-check)
 
 ---
@@ -79,6 +81,34 @@ Retorna dados do usuário autenticado.
   "email": "admin@escola.edu",
   "role": "Administrador",
   "avatar": ""
+}
+```
+
+### `PATCH /auth/me/password`
+
+Alterar a senha do usuário autenticado.
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Request:**
+```json
+{
+  "senhaAtual": "123456",
+  "novaSenha": "novaSenha123"
+}
+```
+
+**Response (200):**
+```json
+{
+  "mensagem": "Senha atualizada com sucesso"
+}
+```
+
+**Response (401):**
+```json
+{
+  "erro": "Senha atual incorreta"
 }
 ```
 
@@ -385,9 +415,78 @@ Remover anexo (arquivo + registro).
 
 ---
 
+## Notificações
+
+Requere token JWT no header `Authorization: Bearer <token>`.
+
+### `GET /notifications`
+
+Lista as notificações do usuário autenticado, ordenadas da mais recente para a mais antiga.
+
+**Response (200):**
+```json
+[
+  {
+    "id": "uuid",
+    "userId": "uuid",
+    "type": "task_created",
+    "title": "Nova tarefa",
+    "message": "Uma nova tarefa foi atribuída a você",
+    "link": "/boards/board-id",
+    "read": false,
+    "createdAt": "2025-07-08T12:00:00.000Z"
+  }
+]
+```
+
+**Tipos de notificação:**
+| Type | Descrição |
+|---|---|
+| `task_created` | Tarefa criada no board |
+| `task_updated` | Tarefa atualizada |
+| `task_moved` | Tarefa movida entre colunas |
+| `comment_created` | Novo comentário em uma tarefa |
+| `member_added` | Membro adicionado a uma equipe |
+
+### `GET /notifications/unread-count`
+
+Retorna a quantidade de notificações não lidas.
+
+**Response (200):**
+```json
+{
+  "count": 3
+}
+```
+
+### `PATCH /notifications/:id/read`
+
+Marca uma notificação como lida.
+
+**Response (200):**
+```json
+{
+  "message": "Notificação marcada como lida"
+}
+```
+
+### `POST /notifications/read-all`
+
+Marca **todas** as notificações do usuário como lidas.
+
+**Response (200):**
+```json
+{
+  "count": 5,
+  "message": "Notificações marcadas como lidas"
+}
+```
+
+---
+
 ## Health Check
 
-### `GET /health`
+### `GET /api/health`
 
 **Response (200):**
 ```json

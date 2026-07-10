@@ -13,6 +13,8 @@ import { attachmentRouter } from './routes/attachments'
 import { notificationRouter } from './routes/notifications'
 import { errorHandler } from './middleware/error-handler'
 import path from 'node:path'
+import { prisma } from './lib/prisma'
+import { seedDatabase } from './db/seed'
 
 const app = express()
 const PORT = process.env.PORT ?? 3001
@@ -50,6 +52,19 @@ if (isProd) {
 
 app.use(errorHandler)
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT} (${isProd ? 'production' : 'development'})`)
-})
+async function startup() {
+  if (isProd) {
+    try {
+      const seeded = await seedDatabase(prisma)
+      if (seeded) console.log('Banco de dados populado automaticamente')
+    } catch (err) {
+      console.error('Erro ao executar seed automático:', err)
+    }
+  }
+
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT} (${isProd ? 'production' : 'development'})`)
+  })
+}
+
+startup()
