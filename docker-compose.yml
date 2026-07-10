@@ -1,0 +1,23 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:18
+
+    container_name: ca3-db
+
+    restart: always
+
+    environment:
+      POSTGRES_USER: CA3
+      POSTGRES_PASSWORD: 745296
+      POSTGRES_DB: CA3
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:
