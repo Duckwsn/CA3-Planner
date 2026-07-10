@@ -49,20 +49,19 @@ Checklist de implantação com status real do código versus configuração no R
 | Item | Status | Impacto |
 |---|---|---|
 | Repositório criado e conectado ao Render | [X] | — |
-| **Últimas alterações commitadas e pusheadas** | [ ] | 🔴 **IMPEDE O DEPLOY** |
+| **Últimas alterações commitadas e pusheadas** | [X] | Commit `53c18e6` para `main` ✅ |
 
-**Arquivos pendentes de commit:**
+**Arquivos commitados no último push:**
 
 | Arquivo | Mudança |
 |---|---|
+| `render.yaml` | **Novo** — Infraestrutura como código (Build, Start, env vars) |
 | `server/src/index.ts` | Seed automático, startup assíncrono |
 | `server/src/db/seed.ts` | Novo — função seedDatabase reutilizável |
 | `server/package.json` | Start script com `npx prisma db push` |
 | `package.json` (raiz) | Start script com `npx prisma db push` |
-| `src/core/api/httpClient.ts` | BASE_URL com `import.meta.env.VITE_API_URL` |
-| `src/shared/components/KpiCard/KpiCard.types.ts` | Novo — tipos do KpiCard |
+| `docs/DEPLOY.md` | Novo — checklist com status e impacto |
 | `docs/PRD.md` | Novo — Product Requirements Document |
-| `docs/DEPLOY.md` | Novo — este documento |
 | `docs/API.md` | Seções de notificações, health check, password |
 | `docs/ARCHITECTURE.md` | Neon/PostgreSQL, deploy section, Notification |
 
@@ -74,24 +73,28 @@ Checklist de implantação com status real do código versus configuração no R
 
 | Item | Status | Impacto |
 |---|---|---|
-| Tipo: Web Service | [?] | — |
-| Root Directory: `.` (raiz) | [?] | — |
-| Runtime: Node | [?] | — |
-| Build Command configurado (`npm install --include=dev && npm run build && cd server && npm install --include=dev && npm run build && npx prisma generate`) | [?] | 🟡 **Verificar no dashboard** |
-| Start Command configurado (`npm start`) | [?] | 🟡 **Verificar no dashboard** |
-| Health Check Path: `/api/health` | [?] | 🟡 **Verificar no dashboard** |
+| `render.yaml` no repositório | [X] | Declaração IaC com Build, Start, env vars ✅ |
+| Build Command (`render.yaml`) | [X] `npm install --include=dev && npm run build && cd server && npm install --include=dev && npm run build && npx prisma generate` | ✅ |
+| Start Command (`render.yaml`) | [X] `npm start` | ✅ |
+| Health Check Path (`render.yaml`) | [X] `/api/health` | ✅ |
+| Build Command no dashboard Render | [?] | 🟡 **Verificar se dashboard reflete render.yaml ou precisa config manual** |
+| Start Command no dashboard Render | [?] | 🟡 **Verificar no dashboard** |
+| Auto-Deploy | [?] | 🟡 **Verificar no dashboard** |
 
 ### Variáveis de Ambiente
 
 | Variável | Obrigatória | Status | Impacto |
 |---|---|---|---|
-| `DATABASE_URL` | ✅ Sim | [?] | 🟡 **Verificar se é a string do Neon** |
-| `JWT_SECRET` | ✅ Sim | [?] | 🟡 **Verificar se é `745296`** |
+| `DATABASE_URL` | ✅ Sim | [?] | 🟡 **Verificar no dashboard Render** |
+| `JWT_SECRET` | ✅ Sim | [?] | 🟡 **Verificar no dashboard Render** |
 | `CORS_ORIGIN` | ✅ Sim | [?] | 🔴 **CRÍTICO** — sem isso CORS bloqueia requisições |
-| `NODE_ENV` | ✅ Sim | [?] | 🔴 **CRÍTICO** — sem `production` o servidor não serve frontend nem roda seed |
-| `VITE_API_URL` | ✅ Sim | [?] | 🔴 **CRÍTICO** — sem `/api` o frontend chama `localhost:3001` |
+| `NODE_ENV=production` | ✅ Sim | [?] | 🔴 **CRÍTICO** — sem `production` o servidor não serve frontend nem roda seed |
+| `VITE_API_URL=/api` | ✅ Sim | [?] | 🔴 **CRÍTICO** — sem `/api` o frontend chama `localhost:3001` |
 | `JWT_EXPIRES_IN` | ❌ Não | — | Opcional (default 7d) |
 | `PORT` | ❌ Não | — | Render define automaticamente |
+
+> 🔧 O `render.yaml` define `NODE_ENV=production` e `VITE_API_URL=/api` como valores fixos.
+> `DATABASE_URL`, `JWT_SECRET` e `CORS_ORIGIN` estão marcados como `sync: false` — você precisa configurá-los manualmente no dashboard do Render.
 
 ---
 
@@ -136,16 +139,18 @@ Checklist de implantação com status real do código versus configuração no R
 ## Status Geral
 
 | Categoria | Concluído | Pendente | Impacto |
-|---|---|---|---|
+|---|---|---|---|---|
 | Pré-requisitos | 3/3 | 0 | ✅ |
 | Neon Database | 4/4 | 0 | ✅ |
-| GitHub (commit/push) | 0/1 | 1 | 🔴 **IMPEDE DEPLOY** |
-| Render (comando/env) | 0/7 | 7 | 🔴 **CRÍTICO** |
+| GitHub (commit/push) | 1/1 | 0 | ✅ |
+| Render (comando/env) | 5/9 | 4 | 🟡 **Requer validação no dashboard** |
 | Código-fonte | 9/9 | 0 | ✅ |
-| Seed | 2/2 | 1 | 🟡 |
-| Pós-deploy | 0/5 | 5 | 🔴 |
+| Build local testado | ✅ | — | TypeScript + Vite compilam sem erros |
+| Seed | 2/2 | 1 | 🟡 **Automaticamente executado no startup em produção** |
+| Pós-deploy | 0/5 | 5 | 🔴 **Aguardando deploy** |
 
-**Resumo:** 18 itens OK, 14 pendentes. O bloqueio principal é:
-1. **Commit/push** — código novo não está no GitHub
-2. **Env vars no Render** — `VITE_API_URL`, `CORS_ORIGIN`, `NODE_ENV` precisam ser validadas
-3. **Build/Start Command no dashboard** — precisam estar conforme documentado
+**Resumo: 24 itens OK, 10 pendentes.** O bloqueio principal agora é:
+
+1. **Configurar env vars no dashboard Render** — `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN`, `NODE_ENV`, `VITE_API_URL`
+2. **Verificar Build/Start Command** — confirmar que o dashboard está usando os comandos do `render.yaml`
+3. **Trigger deploy manual ou automático** — Render deve fazer deploy automático ao detectar push na `main`

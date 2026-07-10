@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: ca3-planner
+    env: node
+    region: oregon
+    buildCommand: npm install --include=dev && npm run build && cd server && npm install --include=dev && npm run build && npx prisma generate
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: VITE_API_URL
+        value: /api
+      - key: CORS_ORIGIN
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
