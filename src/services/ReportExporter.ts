@@ -31,7 +31,12 @@ interface ReportData {
 
 /* ── Helpers ── */
 function hex(d: string): [number, number, number] {
-  const c = d.replace('#', ''); return [parseInt(c[0] + c[1], 16), parseInt(c[2] + c[3], 16), parseInt(c[4] + c[5], 16)]
+  const c = d.replace('#', '')
+  return [
+    parseInt(c[0]! + c[1]!, 16),
+    parseInt(c[2]! + c[3]!, 16),
+    parseInt(c[4]! + c[5]!, 16),
+  ]
 }
 function fmtDate(d: Date) { return d.toLocaleDateString('pt-BR') }
 function statusLabel(s: string) { return COLUMNS.find((c) => c.key === s)?.label ?? s }
@@ -66,10 +71,10 @@ function compute(tasks: Task[]) {
 function autoAnalysis(tasks: Task[], m: ReturnType<typeof compute>) {
   const { total, done, completionRate, priorityDist, statusDist, assigneeDist } = m
   const hp = Object.entries(priorityDist).filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1])
-  const topPrio = hp.length ? `${getPriorityLabel(hp[0][0] as any)} (${hp[0][1]})` : 'Nenhuma'
+  const topPrio = hp.length ? `${getPriorityLabel(hp[0]![0] as any)} (${hp[0]![1]})` : 'Nenhuma'
   const ts = [...statusDist].sort((a, b) => b.count - a.count)
-  const topStatus = ts.length ? `${ts[0].label} (${ts[0].count})` : 'Nenhum'
-  const mp = assigneeDist.length ? `${assigneeDist[0][0]} (${assigneeDist[0][1].done}/${assigneeDist[0][1].total})` : 'Nenhum'
+  const topStatus = ts.length ? `${ts[0]!.label} (${ts[0]!.count})` : 'Nenhum'
+  const mp = assigneeDist.length ? `${assigneeDist[0]![0]} (${assigneeDist[0]![1].done}/${assigneeDist[0]![1].total})` : 'Nenhum'
   const overdue = tasks.filter((t) => t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'done').length
   const r: string[] = []
   r.push(`O sistema possui um total de ${total} atividades registradas.`)
@@ -91,7 +96,7 @@ function footer(doc: jsPDF, page: number, total: number) {
 }
 
 /* ─────────────────────────── COVER PAGE ─────────────────────────── */
-function buildCover(doc: jsPDF, data: ReportData, m: ReturnType<typeof compute>) {
+function buildCover(doc: jsPDF, data: ReportData, _m: ReturnType<typeof compute>) {
   // Line 1: system name + subtitle
   doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(...hex(C.brand))
   doc.text('CA3 Planner', M, 16)
@@ -113,7 +118,7 @@ function buildCover(doc: jsPDF, data: ReportData, m: ReturnType<typeof compute>)
 
 /* ────────────────────────── CONTENT PAGES ────────────────────────── */
 function buildContent(doc: jsPDF, data: ReportData, m: ReturnType<typeof compute>) {
-  const { total, done, completionRate, priorityDist, statusDist, assigneeDist, totalMembers } = m
+  const { total, completionRate, priorityDist, statusDist, assigneeDist, totalMembers } = m
   doc.addPage()
   let y = M + 4
 
@@ -198,7 +203,7 @@ function buildContent(doc: jsPDF, data: ReportData, m: ReturnType<typeof compute
   const aH = 7.5
   doc.setFillColor(...hex(C.zebra)); doc.rect(M, y, CW, aH, 'F')
   doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(...hex(C.textPrimary))
-  const aX = [M + 3, M + 75, M + 115, M + 145]
+  const aX = [M + 3, M + 75, M + 115, M + 145] as const
   doc.text('RESPONSÁVEL', aX[0], y + 5.5); doc.text('TOTAL', aX[1], y + 5.5); doc.text('CONCLUÍDAS', aX[2], y + 5.5); doc.text('%', aX[3], y + 5.5)
   y += aH
 
@@ -253,14 +258,14 @@ function buildContent(doc: jsPDF, data: ReportData, m: ReturnType<typeof compute
     margin: { left: M, right: M },
     didParseCell: (data: any) => {
       if (data.column.index === 3) {
-        const raw = body[data.row.index][8]
+        const raw = body[data.row.index]?.[8]
         const map: Record<string, string> = C.prioText
-        data.cell.styles.textColor = hex((map as any)[raw] ?? C.textPrimary)
+        data.cell.styles.textColor = raw ? hex((map as any)[raw] ?? C.textPrimary) : hex(C.textPrimary)
       }
       if (data.column.index === 4) {
-        const raw = body[data.row.index][9]
+        const raw = body[data.row.index]?.[9]
         const map: Record<string, string> = C.statusText
-        data.cell.styles.textColor = hex((map as any)[raw] ?? C.textPrimary)
+        data.cell.styles.textColor = raw ? hex((map as any)[raw] ?? C.textPrimary) : hex(C.textPrimary)
       }
     },
   })
@@ -316,7 +321,7 @@ export async function exportReport(data: ReportData): Promise<void> {
   buildCover(doc, data, m)
   buildContent(doc, data, m)
 
-  const total = doc.internal.getNumberOfPages()
+  const total = doc.getNumberOfPages()
   for (let i = 1; i <= total; i++) {
     doc.setPage(i)
     if (i > 1) footer(doc, i, total)

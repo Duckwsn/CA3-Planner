@@ -1,5 +1,6 @@
 interface LoadingStateProps {
   lines?: number
+  message?: string
 }
 
 function SkeletonLine({ width }: { width: string }) {
@@ -11,9 +12,10 @@ function SkeletonLine({ width }: { width: string }) {
   )
 }
 
-export function LoadingState({ lines = 4 }: LoadingStateProps) {
+export function LoadingState({ lines = 4, message }: LoadingStateProps) {
   return (
     <div className="space-y-4 p-6">
+      {message && <p className="text-size-body-small text-[var(--gray-500)] text-center">{message}</p>}
       <SkeletonLine width="40%" />
       {Array.from({ length: lines }, (_, i) => (
         <SkeletonLine key={i} width={`${70 - i * 10}%`} />

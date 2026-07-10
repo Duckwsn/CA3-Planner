@@ -6,7 +6,7 @@ export function useTasks(boardId: string) {
   const loading = useTaskStore((s) => s.loading)
   const error = useTaskStore((s) => s.error)
   const loadTasks = useTaskStore((s) => s.loadTasks)
-  const createTask = useTaskStore((s) => s.createTask)
+  const createTask = useTaskStore((s) => s.addTask)
   const updateTask = useTaskStore((s) => s.updateTask)
   const deleteTask = useTaskStore((s) => s.deleteTask)
 

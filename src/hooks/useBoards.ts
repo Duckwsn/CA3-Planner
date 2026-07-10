@@ -6,7 +6,7 @@ export function useBoards() {
   const loading = useBoardStore((s) => s.loading)
   const error = useBoardStore((s) => s.error)
   const loadBoards = useBoardStore((s) => s.loadBoards)
-  const createBoard = useBoardStore((s) => s.createBoard)
+  const createBoard = useBoardStore((s) => s.addBoard)
   const updateBoard = useBoardStore((s) => s.updateBoard)
   const deleteBoard = useBoardStore((s) => s.deleteBoard)
 
