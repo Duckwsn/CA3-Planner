@@ -12,13 +12,18 @@ import { checklistRouter } from './routes/checklist'
 import { attachmentRouter } from './routes/attachments'
 import { notificationRouter } from './routes/notifications'
 import { errorHandler } from './middleware/error-handler'
+import path from 'node:path'
 
 const app = express()
 const PORT = process.env.PORT ?? 3001
+const isProd = process.env.NODE_ENV === 'production'
 
-app.use(helmet())
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }))
-app.use(morgan('dev'))
+app.use(helmet({ contentSecurityPolicy: false }))
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  credentials: true,
+}))
+app.use(morgan(isProd ? 'combined' : 'dev'))
 app.use(express.json())
 
 app.get('/api/health', (_req, res) => {
@@ -35,8 +40,16 @@ app.use('/api/attachments', attachmentRouter)
 app.use('/api/notifications', notificationRouter)
 app.use('/uploads', express.static('uploads'))
 
+if (isProd) {
+  const distPath = path.resolve(__dirname, '../../dist')
+  app.use(express.static(distPath))
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'))
+  })
+}
+
 app.use(errorHandler)
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`)
+  console.log(`Server running on http://localhost:${PORT} (${isProd ? 'production' : 'development'})`)
 })
