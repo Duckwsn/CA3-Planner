@@ -15,6 +15,7 @@ import { errorHandler } from './middleware/error-handler'
 import path from 'node:path'
 import { prisma } from './lib/prisma'
 import { seedDatabase } from './db/seed'
+import { startArchiveJob } from './jobs/archive-completed-tasks'
 
 const app = express()
 const PORT = process.env.PORT ?? 3001
@@ -61,6 +62,8 @@ async function startup() {
       console.error('Erro ao executar seed automático:', err)
     }
   }
+
+  startArchiveJob()
 
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT} (${isProd ? 'production' : 'development'})`)

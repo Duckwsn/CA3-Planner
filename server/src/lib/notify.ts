@@ -1,5 +1,9 @@
 import { prisma } from './prisma'
 
+export function boardLink(boardId: string): string {
+  return `/boards/${boardId}`
+}
+
 interface NotifyData {
   organizationId: string
   excludeUserId: string
@@ -21,7 +25,7 @@ export async function notifyOrganizationMembers(data: NotifyData) {
   if (users.length === 0) return
 
   await prisma.notification.createMany({
-    data: users.map((u) => ({
+    data: users.map((u: { id: string }) => ({
       userId: u.id,
       type: data.type,
       title: data.title,

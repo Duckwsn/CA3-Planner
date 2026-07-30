@@ -11,6 +11,9 @@ export interface Task {
   priority: TaskPriority
   assignee: string
   dueDate: string
+  completedAt: string | null
+  archived: boolean
+  archivedAt: string | null
   createdAt: string
   updatedAt: string
 }

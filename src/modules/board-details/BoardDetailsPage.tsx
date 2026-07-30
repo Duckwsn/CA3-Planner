@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { DragDropContext, type DropResult } from '@hello-pangea/dnd'
-import { Pencil, Trash2, ArrowLeft, Plus, Send, Check, X } from 'lucide-react'
+import { Pencil, Trash2, Archive, ArrowLeft, Plus, Send, Check, X } from 'lucide-react'
 import { Button } from '../../shared/components/Button'
 import { ErrorState } from '../../shared/components/ErrorState'
 import { LoadingState } from '../../shared/components/LoadingState'
@@ -12,6 +12,7 @@ import { Textarea } from '../../shared/components/Textarea'
 import { Select } from '../../shared/components/Select'
 import { Badge } from '../../shared/components/Badge'
 import { KanbanColumn } from '../../shared/components/KanbanColumn'
+import { TeamService } from '../../services/TeamService'
 import { useBoardStore } from '../../stores/domain/boardStore'
 import { useTaskStore } from '../../stores/domain/taskStore'
 import { useCommentStore } from '../../stores/domain/commentStore'
@@ -32,7 +33,7 @@ export default function BoardDetailsPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { selectedBoard, error, loadBoard, updateBoard, deleteBoard } = useBoardStore()
-  const { tasks, loading: tasksLoading, loadTasks, addTask, updateTask, deleteTask, moveTask, setSelectedTask } = useTaskStore()
+  const { tasks, loading: tasksLoading, loadTasks, addTask, updateTask, deleteTask, moveTask, archiveTask, setSelectedTask } = useTaskStore()
   const { loadComments, addComment, getTaskComments } = useCommentStore()
   const { loadItems, addItem, toggleItem, removeItem, getTaskItems } = useChecklistStore()
   const { loadAttachments } = useAttachmentStore()
@@ -50,6 +51,11 @@ export default function BoardDetailsPage() {
   const [deleteTaskConfirm, setDeleteTaskConfirm] = useState(false)
   const [commentText, setCommentText] = useState('')
   const [checklistText, setChecklistText] = useState('')
+  const [assignees, setAssignees] = useState<string[]>([])
+
+  useEffect(() => {
+    TeamService.listAssignableMembers().then(setAssignees).catch(() => setAssignees([]))
+  }, [])
 
   useEffect(() => {
     if (id) {
@@ -144,6 +150,12 @@ export default function BoardDetailsPage() {
     closeDetail()
   }
 
+  async function handleArchiveTask() {
+    if (!detailTask) return
+    await archiveTask(detailTask.id)
+    closeDetail()
+  }
+
   async function handleAddComment() {
     if (!detailTask || !commentText.trim()) return
     await addComment({ taskId: detailTask.id, content: commentText })
@@ -215,6 +227,12 @@ export default function BoardDetailsPage() {
         </DragDropContext>
       )}
 
+      <div className="mt-4">
+        <Button variant="ghost" size="sm" onClick={() => navigate(`/boards/${id}/archived`)}>
+          Ver tarefas arquivadas
+        </Button>
+      </div>
+
       {/* Create Task Modal */}
       <Modal open={createTaskOpen} onClose={() => setCreateTaskOpen(false)} title="Nova Tarefa">
         <div className="space-y-4">
@@ -222,7 +240,7 @@ export default function BoardDetailsPage() {
           <Textarea label="Descrição" value={taskForm.description} onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })} placeholder="Descrição opcional" />
           <div className="grid grid-cols-2 gap-4">
             <Select label="Prioridade" value={taskForm.priority} onChange={(e) => setTaskForm({ ...taskForm, priority: e.target.value as TaskPriority })} options={PRIORITIES} />
-            <Input label="Responsável" value={taskForm.assignee} onChange={(e) => setTaskForm({ ...taskForm, assignee: e.target.value })} placeholder="Nome do responsável" />
+            <Select label="Responsável" placeholder="Selecione um responsável" value={taskForm.assignee} onChange={(e) => setTaskForm({ ...taskForm, assignee: e.target.value })} options={assignees.map((name) => ({ value: name, label: name }))} />
           </div>
           <Input label="Data de Entrega" type="date" value={taskForm.dueDate} onChange={(e) => setTaskForm({ ...taskForm, dueDate: e.target.value })} />
         </div>
@@ -259,6 +277,7 @@ export default function BoardDetailsPage() {
             <div className="flex gap-2">
               <Button variant="secondary" size="sm" iconLeft={<Pencil size={14} />} onClick={openEditTask}>Editar</Button>
               <Button variant="danger" size="sm" iconLeft={<Trash2 size={14} />} onClick={() => setDeleteTaskConfirm(true)}>Excluir</Button>
+              <Button variant="secondary" size="sm" iconLeft={<Archive size={14} />} onClick={handleArchiveTask}>Arquivar</Button>
             </div>
 
             {/* Checklist */}
@@ -334,7 +353,7 @@ export default function BoardDetailsPage() {
           <Textarea label="Descrição" value={editTaskForm.description} onChange={(e) => setEditTaskForm({ ...editTaskForm, description: e.target.value })} />
           <div className="grid grid-cols-2 gap-4">
             <Select label="Prioridade" value={editTaskForm.priority} onChange={(e) => setEditTaskForm({ ...editTaskForm, priority: e.target.value as TaskPriority })} options={PRIORITIES} />
-            <Input label="Responsável" value={editTaskForm.assignee} onChange={(e) => setEditTaskForm({ ...editTaskForm, assignee: e.target.value })} />
+            <Select label="Responsável" placeholder="Selecione um responsável" value={editTaskForm.assignee} onChange={(e) => setEditTaskForm({ ...editTaskForm, assignee: e.target.value })} options={assignees.map((name) => ({ value: name, label: name }))} />
           </div>
           <Input label="Data de Entrega" type="date" value={editTaskForm.dueDate} onChange={(e) => setEditTaskForm({ ...editTaskForm, dueDate: e.target.value })} />
         </div>

@@ -14,6 +14,7 @@ interface TaskState {
   updateTask: (id: string, data: Partial<TaskFormData>) => Promise<void>
   moveTask: (id: string, status: TaskStatus) => Promise<void>
   deleteTask: (id: string) => Promise<void>
+  archiveTask: (id: string) => Promise<void>
   getBoardTasks: (boardId: string) => Task[]
   setSelectedTask: (task: Task | null) => void
 }
@@ -87,6 +88,18 @@ export const useTaskStore = create<TaskState>()(
           }))
         } catch {
           set({ error: 'Erro ao excluir tarefa' })
+        }
+      },
+
+      archiveTask: async (id) => {
+        try {
+          const updated = await TaskService.archive(id)
+          set((s) => ({
+            tasks: s.tasks.map((t) => (t.id === id ? updated : t)),
+            selectedTask: s.selectedTask?.id === id ? null : s.selectedTask,
+          }))
+        } catch {
+          set({ error: 'Erro ao arquivar tarefa' })
         }
       },
 

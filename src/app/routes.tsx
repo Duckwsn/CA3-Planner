@@ -8,6 +8,7 @@ const RegisterPage = lazy(() => import('../modules/register/RegisterPage'))
 const DashboardPage = lazy(() => import('../modules/dashboard/DashboardPage'))
 const BoardsPage = lazy(() => import('../modules/boards/BoardsPage'))
 const BoardDetailsPage = lazy(() => import('../modules/board-details/BoardDetailsPage'))
+const ArchivedTasksPage = lazy(() => import('../modules/archived-tasks/ArchivedTasksPage'))
 const CalendarPage = lazy(() => import('../modules/calendar/CalendarPage'))
 const TeamsPage = lazy(() => import('../modules/teams/TeamsPage'))
 const ReportsPage = lazy(() => import('../modules/reports/ReportsPage'))
@@ -27,6 +28,7 @@ export const privateRoutes = {
     { path: '/dashboard', element: <DashboardPage /> },
     { path: '/boards', element: <BoardsPage /> },
     { path: '/boards/:id', element: <BoardDetailsPage /> },
+    { path: '/boards/:id/archived', element: <ArchivedTasksPage /> },
     { path: '/calendar', element: <CalendarPage /> },
     { path: '/teams', element: <TeamsPage /> },
     { path: '/reports', element: <ReportsPage /> },

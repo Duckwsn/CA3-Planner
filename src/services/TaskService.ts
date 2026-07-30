@@ -25,4 +25,8 @@ export const TaskService = {
   async remove(id: string): Promise<void> {
     await apiDelete(`/tasks/${id}`)
   },
+
+  async archive(id: string): Promise<Task> {
+    return apiPatch<Task>(`/tasks/${id}/archive`, {})
+  },
 }

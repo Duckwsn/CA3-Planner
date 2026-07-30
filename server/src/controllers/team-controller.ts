@@ -76,6 +76,31 @@ export async function remove(req: AuthRequest, res: Response) {
   }
 }
 
+export async function listAssignableMembers(req: AuthRequest, res: Response) {
+  try {
+    const users = await prisma.user.findMany({
+      where: { organizationId: req.organizationId },
+      select: { name: true },
+    })
+    const teamMembers = await prisma.teamMember.findMany({
+      where: { team: { organizationId: req.organizationId } },
+      select: { name: true },
+    })
+
+    const seen = new Map<string, string>()
+    for (const { name } of [...users, ...teamMembers]) {
+      const key = name.trim().toLowerCase()
+      if (!seen.has(key)) seen.set(key, name.trim())
+    }
+
+    const options = [...seen.values()].sort((a, b) => a.localeCompare(b, 'pt-BR'))
+    res.json(options)
+  } catch (err) {
+    console.error('[MEMBERS_LIST_ASSIGNABLE]', err)
+    res.status(500).json({ error: 'Erro ao listar responsáveis' })
+  }
+}
+
 export async function addMember(req: AuthRequest, res: Response) {
   try {
     const id = req.params.id as string

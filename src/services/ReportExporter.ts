@@ -119,8 +119,7 @@ function buildCover(doc: jsPDF, data: ReportData, _m: ReturnType<typeof compute>
 /* ────────────────────────── CONTENT PAGES ────────────────────────── */
 function buildContent(doc: jsPDF, data: ReportData, m: ReturnType<typeof compute>) {
   const { total, completionRate, priorityDist, statusDist, assigneeDist, totalMembers } = m
-  doc.addPage()
-  let y = M + 4
+  let y = 50
 
   /* ═══ Resumo Geral (KPIs) — single occurrence ═══ */
   doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(...hex(C.textPrimary))
@@ -324,7 +323,7 @@ export async function exportReport(data: ReportData): Promise<void> {
   const total = doc.getNumberOfPages()
   for (let i = 1; i <= total; i++) {
     doc.setPage(i)
-    if (i > 1) footer(doc, i, total)
+    footer(doc, i, total)
   }
 
   doc.save(`relatorio-gerencial-${new Date().toISOString().substring(0, 10)}.pdf`)

@@ -1,7 +1,7 @@
 import type { Response } from 'express'
 import type { AuthRequest } from '../middleware/auth'
 import { prisma } from '../lib/prisma'
-import { notifyOrganizationMembers } from '../lib/notify'
+import { boardLink, notifyOrganizationMembers } from '../lib/notify'
 
 export async function listByTask(req: AuthRequest, res: Response) {
   try {
@@ -42,7 +42,7 @@ export async function create(req: AuthRequest, res: Response) {
         type: 'comment_created',
         title: 'Novo comentário',
         message: `${comment.user.name} comentou em "${task.title}"`,
-        link: `/boards/${task.boardId}`,
+        link: boardLink(task.boardId),
       })
     }
 

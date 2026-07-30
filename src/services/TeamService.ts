@@ -25,4 +25,8 @@ export const TeamService = {
   async removeMember(teamId: string, memberId: string): Promise<void> {
     await apiDelete(`/teams/${teamId}/members/${memberId}`)
   },
+
+  async listAssignableMembers(): Promise<string[]> {
+    return apiGet<string[]>('/teams/assignable-members')
+  },
 }

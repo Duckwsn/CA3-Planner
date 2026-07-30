@@ -1,7 +1,7 @@
 import type { Response } from 'express'
 import type { AuthRequest } from '../middleware/auth'
 import { prisma } from '../lib/prisma'
-import { notifyOrganizationMembers } from '../lib/notify'
+import { boardLink, notifyOrganizationMembers } from '../lib/notify'
 
 export async function listAll(req: AuthRequest, res: Response) {
   try {
@@ -28,7 +28,7 @@ export async function listByBoard(req: AuthRequest, res: Response) {
       return
     }
     const tasks = await prisma.task.findMany({
-      where: { boardId },
+      where: { boardId, archived: false },
       orderBy: { createdAt: 'asc' },
     })
     res.json(tasks)
@@ -69,7 +69,7 @@ export async function create(req: AuthRequest, res: Response) {
       type: 'task_created',
       title: 'Nova tarefa',
       message: `"${task.title}" foi criada em "${board.title}"`,
-      link: `/boards/${boardId}`,
+      link: boardLink(boardId),
     })
 
     res.status(201).json(task)
@@ -98,7 +98,17 @@ export async function update(req: AuthRequest, res: Response) {
 
     const updated = await prisma.task.update({
       where: { id },
-      data: { title, description, status, priority, assignee, dueDate },
+      data: {
+        title,
+        description,
+        status,
+        priority,
+        assignee,
+        dueDate,
+        completedAt: status === 'done'
+          ? (task.status !== 'done' ? new Date() : undefined)
+          : null,
+      },
     })
 
     await notifyOrganizationMembers({
@@ -107,7 +117,7 @@ export async function update(req: AuthRequest, res: Response) {
       type: 'task_moved',
       title: 'Tarefa atualizada',
       message: `"${updated.title}" foi atualizada em "${board?.title ?? 'Quadro'}"`,
-      link: `/board/${task.boardId}`,
+      link: boardLink(task.boardId),
     })
 
     res.json(updated)
@@ -136,7 +146,12 @@ export async function move(req: AuthRequest, res: Response) {
 
     const updated = await prisma.task.update({
       where: { id },
-      data: { status },
+      data: {
+        status,
+        completedAt: status === 'done'
+          ? (task.status !== 'done' ? new Date() : undefined)
+          : null,
+      },
     })
 
     const statusLabel: Record<string, string> = { todo: 'A fazer', doing: 'Fazendo', done: 'Concluído' }
@@ -147,7 +162,7 @@ export async function move(req: AuthRequest, res: Response) {
       type: 'task_moved',
       title: 'Tarefa movida',
       message: `"${updated.title}" foi movida para "${statusLabel[status] ?? status}" em "${board?.title ?? 'Quadro'}"`,
-      link: `/board/${task.boardId}`,
+      link: boardLink(task.boardId),
     })
 
     res.json(updated)
@@ -173,5 +188,41 @@ export async function remove(req: AuthRequest, res: Response) {
   } catch (err) {
     console.error('[TASKS_DELETE]', err)
     res.status(500).json({ error: 'Erro ao excluir tarefa' })
+  }
+}
+
+export async function archive(req: AuthRequest, res: Response) {
+  try {
+    const id = req.params.id as string
+    const task = await prisma.task.findUnique({
+      where: { id },
+      include: { board: { select: { organizationId: true } } },
+    })
+    if (!task || task.board.organizationId !== req.organizationId) {
+      res.status(404).json({ error: 'Tarefa não encontrada' })
+      return
+    }
+    const updated = await prisma.task.update({
+      where: { id },
+      data: { archived: true, archivedAt: new Date() },
+    })
+    res.json(updated)
+  } catch (err) {
+    console.error('[TASKS_ARCHIVE]', err)
+    res.status(500).json({ error: 'Erro ao arquivar tarefa' })
+  }
+}
+
+export async function listArchived(req: AuthRequest, res: Response) {
+  try {
+    const tasks = await prisma.task.findMany({
+      where: { board: { organizationId: req.organizationId }, archived: true },
+      include: { board: { select: { title: true, color: true } } },
+      orderBy: { archivedAt: 'desc' },
+    })
+    res.json(tasks)
+  } catch (err) {
+    console.error('[TASKS_LIST_ARCHIVED]', err)
+    res.status(500).json({ error: 'Erro ao listar tarefas arquivadas' })
   }
 }
