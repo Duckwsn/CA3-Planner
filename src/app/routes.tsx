@@ -13,6 +13,7 @@ const CalendarPage = lazy(() => import('../modules/calendar/CalendarPage'))
 const TeamsPage = lazy(() => import('../modules/teams/TeamsPage'))
 const ReportsPage = lazy(() => import('../modules/reports/ReportsPage'))
 const SettingsPage = lazy(() => import('../modules/settings/SettingsPage'))
+const AdminPage = lazy(() => import('../modules/admin/AdminPage'))
 const NotFoundPage = lazy(() => import('../modules/not-found/NotFoundPage'))
 
 export const publicRoutes = [
@@ -33,6 +34,7 @@ export const privateRoutes = {
     { path: '/teams', element: <TeamsPage /> },
     { path: '/reports', element: <ReportsPage /> },
     { path: '/settings', element: <SettingsPage /> },
+    { path: '/admin', element: <AdminPage /> },
     { path: '*', element: <NotFoundPage /> },
   ],
 }

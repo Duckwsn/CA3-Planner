@@ -1,5 +1,34 @@
 # Log de Atualizações
 
+## 2026-07-31 — Área Admin (/admin): CRUD direto no banco + console SQL
+
+### Adicionado
+- Endpoints `/api/admin/*` protegidos por `authenticate` + `requireAdmin`, onde admin é definido pela env var `ADMIN_EMAILS` (lista de emails separada por vírgula) — sem mudança no schema.
+- `GET /api/admin/access` (autenticado, sem exigir admin): retorna `{ isAdmin }` para o front mostrar/ocultar o menu.
+- CRUD completo de **usuários** (criar, editar, excluir, resetar senha) e de **organizações** (com cascata e bloqueio para apagar a própria org).
+- Navegador **genérico de tabelas** (`User`, `Organization`, `Board`, `Task`, `Team`, `TeamMember`, `Notification`, `ChecklistItem`, `Comment`, `Attachment`): listar linhas (limit 200), criar/editar via JSON, excluir — com allowlist para impedir acesso a modelos arbitrários.
+- **Console SQL** (`POST /sql`): `SELECT`/`SHOW`/... → `$queryRawUnsafe` (linhas); demais → `$executeRawUnsafe` (rowCount).
+- Página `/admin` no frontend (abas Visão Geral, Usuários, Organizações, Banco de Dados + SQL), item "Admin" na sidebar só para emails listados.
+
+### Arquivos alterados
+- server/src/middleware/admin.ts (novo)
+- server/src/controllers/admin-controller.ts (novo)
+- server/src/routes/admin.ts (novo)
+- server/src/index.ts
+- src/types/admin.types.ts (novo)
+- src/services/AdminService.ts (novo)
+- src/modules/admin/AdminPage.tsx (novo)
+- src/app/routes.tsx
+- src/shared/components/Sidebar/index.tsx
+- server/.env.example, render.yaml, docs/DEPLOY.md
+
+### Observações
+- `ADMIN_EMAILS` precisa ser configurada no servidor (e no Render após o deploy) para habilitar a área.
+- Não é possível apagar o próprio usuário nem a organização em que o admin logado está.
+- O console SQL executa comandos crus — uso restrito a admins.
+
+---
+
 ## 2026-07-31 — Edição de perfil persistida no banco (nome/cargo/avatar)
 
 ### Adicionado

@@ -46,6 +46,8 @@ Edite `server/.env`:
 DATABASE_URL="file:./dev.db"
 JWT_SECRET="sua-chave-secreta-aqui"
 PORT=3001
+# Emails com acesso à área /admin (separados por vírgula)
+ADMIN_EMAILS="atendimento@ca3inteligencia.com.br"
 ```
 
 ```bash
@@ -144,6 +146,7 @@ BrowserRouter
                 ├── /teams       → TeamsPage
                 ├── /reports     → ReportsPage
                 ├── /settings    → SettingsPage
+                ├── /admin       → AdminPage (restrito a ADMIN_EMAILS)
                 └── *            → NotFoundPage
 ```
 
@@ -163,6 +166,7 @@ Express Router
     ├── /checklist     → CRUD checklist items
     ├── /attachments   → upload/download attachments
     ├── /notifications → listar/marcar notificações
+    ├── /admin         → stats, CRUD usuários/orgs, navegador de tabelas, console SQL (ADMIN_EMAILS)
     └── /health        → health check
 
 Jobs agendados (node-cron, `server/src/jobs/`):
@@ -200,6 +204,8 @@ User (1)──→ TeamMember (N)
 | **Arquivamento automático** | Tarefas concluídas são arquivadas automaticamente por job agendado e somem do kanban na hora |
 | **Tarefas arquivadas** | Tela com modal de detalhes, "Retornar tarefa" ao quadro e "Excluir permanentemente" (com confirmação) |
 | **Limpeza automática** | Job exclui permanentemente tarefas arquivadas há mais de 30 dias |
+| **Painel Admin** | Rota `/admin` restrita a `ADMIN_EMAILS`: CRUD de usuários e organizações, navegador de tabelas e console SQL |
+| **Perfil persistido** | Edição de nome/cargo/avatar em Configurações salva no banco e reflete nas equipes |
 | **Design responsivo** | Sidebar colapsável, grid adaptável |
 | **Tema consistente** | Design system completo com CSS custom properties |
 
@@ -288,6 +294,17 @@ O design system está definido em `src/shared/styles/tokens.css` como CSS custom
 | `GET` | `/api/comments/task/:taskId` | Comentários de uma tarefa |
 | `GET` | `/api/checklist/task/:taskId` | Checklist de uma tarefa |
 | `GET` | `/api/attachments/task/:taskId` | Anexos de uma tarefa |
+| `GET` | `/api/admin/access` | `{ isAdmin }` do usuário logado |
+| `GET` | `/api/admin/stats` | Contagem de todas as tabelas |
+| `GET/POST` | `/api/admin/users` | Listar / criar usuários |
+| `PATCH/DELETE` | `/api/admin/users/:id` | Editar / excluir usuário |
+| `POST` | `/api/admin/users/:id/password` | Resetar senha |
+| `GET/POST` | `/api/admin/organizations` | Listar / criar organizações |
+| `PATCH/DELETE` | `/api/admin/organizations/:id` | Editar / excluir organização |
+| `GET` | `/api/admin/tables` | Listar tabelas com contagens |
+| `GET/POST` | `/api/admin/tables/:name` | Listar linhas / criar linha |
+| `PATCH/DELETE` | `/api/admin/tables/:name/:id` | Editar / excluir linha |
+| `POST` | `/api/admin/sql` | Executar SQL (console admin) |
 
 Documentação completa em [docs/API.md](docs/API.md).
 

@@ -67,6 +67,7 @@ Checklist de implantação com status real do código versus configuração no R
 | `CORS_ORIGIN` | [X] Configurada |
 | `NODE_ENV=production` | [X] Configurada |
 | `VITE_API_URL=/api` | [X] Configurada |
+| `ADMIN_EMAILS` | [ ] Emails com acesso à área /admin (ex.: `atendimento@ca3inteligencia.com.br`) |
 
 ---
 

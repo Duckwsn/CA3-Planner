@@ -17,6 +17,7 @@ Autenticação via `Authorization: Bearer <token>` (exceto login/register).
 - [Checklist](#checklist)
 - [Anexos](#anexos)
 - [Notificações](#notificações)
+- [Admin](#admin)
 - [Health Check](#health-check)
 
 ---
@@ -481,6 +482,96 @@ Marca **todas** as notificações do usuário como lidas.
   "message": "Notificações marcadas como lidas"
 }
 ```
+
+---
+
+## Admin
+
+Área restrita: exige `authenticate` + `requireAdmin` (usuário com email em `ADMIN_EMAILS`). A exceção é `GET /access`, que qualquer usuário autenticado pode chamar.
+
+### `GET /admin/access`
+
+Retorna se o usuário logado tem acesso admin.
+
+**Response (200):**
+```json
+{ "isAdmin": true }
+```
+
+### `GET /admin/stats`
+
+Contagem de linhas de todas as tabelas.
+
+**Response (200):**
+```json
+{
+  "User": 5,
+  "Organization": 1,
+  "Board": 3,
+  "Task": 40,
+  "Team": 2,
+  "TeamMember": 6,
+  "Notification": 12,
+  "ChecklistItem": 8,
+  "Comment": 25,
+  "Attachment": 4
+}
+```
+
+### Usuários
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/admin/users` | Lista usuários com nome da organização |
+| `POST` | `/admin/users` | Cria usuário: `{ name, email, password, role?, avatar?, organizationId }` |
+| `PATCH` | `/admin/users/:id` | Edita: `{ name?, email?, role?, avatar?, organizationId? }` |
+| `DELETE` | `/admin/users/:id` | Exclui (não permite apagar a si mesmo) |
+| `POST` | `/admin/users/:id/password` | Reseta senha: `{ password }` (mín. 6) |
+
+### Organizações
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/admin/organizations` | Lista com contagem de usuários/quadros/equipes |
+| `POST` | `/admin/organizations` | Cria: `{ name }` |
+| `PATCH` | `/admin/organizations/:id` | Edita nome |
+| `DELETE` | `/admin/organizations/:id` | Exclui em cascata (bloqueado para a org do usuário logado) |
+
+### Tabelas (navegador genérico)
+
+Modelos permitidos: `User`, `Organization`, `Board`, `Task`, `Team`, `TeamMember`, `Notification`, `ChecklistItem`, `Comment`, `Attachment`.
+
+| Método | Rota | Descrição |
+|---|---|---|
+| `GET` | `/admin/tables` | Lista tabelas com contagens |
+| `GET` | `/admin/tables/:name?limit=100&offset=0` | Linhas (max 500) + total |
+| `POST` | `/admin/tables/:name` | Cria linha a partir do corpo (JSON de campos escalares) |
+| `PATCH` | `/admin/tables/:name/:id` | Atualiza campos escalares |
+| `DELETE` | `/admin/tables/:name/:id` | Exclui linha |
+
+### `POST /admin/sql`
+
+Console SQL. `SELECT`/`SHOW`/`EXPLAIN`/`PRAGMA`/`WITH` → `$queryRawUnsafe` (retorna `rows`); demais comandos → `$executeRawUnsafe` (retorna `rowCount`).
+
+**Request:**
+```json
+{ "query": "SELECT id, name, email FROM users LIMIT 5;" }
+```
+
+**Response (200) — leitura:**
+```json
+{
+  "rows": [ { "id": "uuid", "name": "Ana", "email": "ana@escola.edu" } ],
+  "readOnly": true
+}
+```
+
+**Response (200) — escrita:**
+```json
+{ "rowCount": 1, "readOnly": false }
+```
+
+**Erros:** `400` com `{ "error": "<mensagem do banco>" }` para query inválida.
 
 ---
 

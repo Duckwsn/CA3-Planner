@@ -7,6 +7,7 @@ import {
   Users,
   BarChart3,
   Settings,
+  Database,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -15,6 +16,7 @@ import {
 import { loadProfile, type ProfileData } from '../../../utils/profile'
 import { useAuth } from '../../../hooks/useAuth'
 import { useUIStore } from '../../../stores/core/uiStore'
+import { AdminService } from '../../../services/AdminService'
 
 const NAV_ITEMS = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
@@ -45,6 +47,13 @@ export function Sidebar() {
   const toggle = useUIStore((s) => s.setSidebarCollapsed)
 
   const [profile, setProfile] = useState<ProfileData | null>(() => loadProfile(user?.id))
+  const [adminAllowed, setAdminAllowed] = useState(false)
+
+  useEffect(() => {
+    AdminService.access()
+      .then(({ isAdmin }) => setAdminAllowed(isAdmin))
+      .catch(() => setAdminAllowed(false))
+  }, [])
 
   useEffect(() => {
     function handleProfileUpdate(e: Event) {
@@ -105,6 +114,21 @@ export function Sidebar() {
             {!collapsed && <span className="text-size-body-small truncate">{item.label}</span>}
           </NavLink>
         ))}
+        {adminAllowed && (
+          <NavLink
+            to="/admin"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] transition-colors duration-[var(--duration-fast)] ${
+                isActive
+                  ? 'bg-[var(--color-sidebar-item-active-bg)] text-[var(--color-sidebar-item-active-text)] font-semibold'
+                  : 'text-[var(--color-sidebar-item-inactive)] hover:bg-white/10 hover:text-white'
+              }`
+            }
+          >
+            <Database size={20} className="shrink-0" />
+            {!collapsed && <span className="text-size-body-small truncate">Admin</span>}
+          </NavLink>
+        )}
       </nav>
 
       {/* User area */}

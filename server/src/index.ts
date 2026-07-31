@@ -12,6 +12,7 @@ import { commentRouter } from './routes/comments'
 import { checklistRouter } from './routes/checklist'
 import { attachmentRouter } from './routes/attachments'
 import { notificationRouter } from './routes/notifications'
+import { adminRouter } from './routes/admin'
 import { errorHandler } from './middleware/error-handler'
 import path from 'node:path'
 import { prisma } from './lib/prisma'
@@ -44,6 +45,7 @@ app.use('/api/comments', commentRouter)
 app.use('/api/checklist', checklistRouter)
 app.use('/api/attachments', attachmentRouter)
 app.use('/api/notifications', notificationRouter)
+app.use('/api/admin', adminRouter)
 app.use('/uploads', express.static('uploads'))
 
 if (isProd) {
