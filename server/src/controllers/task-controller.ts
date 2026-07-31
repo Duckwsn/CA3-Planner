@@ -6,7 +6,7 @@ import { boardLink, notifyOrganizationMembers } from '../lib/notify'
 export async function listAll(req: AuthRequest, res: Response) {
   try {
     const tasks = await prisma.task.findMany({
-      where: { board: { organizationId: req.organizationId } },
+      where: { board: { organizationId: req.organizationId }, archived: false },
       include: { board: { select: { id: true, title: true, color: true } } },
       orderBy: { createdAt: 'desc' },
     })

@@ -1,5 +1,19 @@
 # Log de Atualizações
 
+## 2026-07-31 — Correção: kanban não atualizava ao arquivar + `listAll` ignorava arquivadas
+
+### Corrigido
+- `archiveTask` no `taskStore.ts` passou a **remover** a tarefa do estado ao arquivar (antes mantinha a tarefa com `archived: true` no array, fazendo o kanban continuar exibindo-a até recarregar a página).
+- Filtro defensivo `!archived` em `boardTasks` no `BoardDetailsPage.tsx` (protege contra estado obsoleto persistido no localStorage).
+- `listAll` (`GET /tasks`) passou a excluir tarefas arquivadas — Dashboard, Relatórios e Calendário não contam mais tarefas arquivadas.
+
+### Arquivos alterados
+- src/stores/domain/taskStore.ts
+- src/modules/board-details/BoardDetailsPage.tsx
+- server/src/controllers/task-controller.ts
+
+---
+
 ## 2026-07-31 — Arquivamento de Tarefas: retorno + exclusão permanente
 
 ### Adicionado
@@ -17,4 +31,4 @@
 - src/modules/archived-tasks/ArchivedTasksPage.tsx
 
 ### Observações
-- Ao retornar, a tarefa mantém status "Concluído" e ganha uma nova janela de 15 dias antes de voltar a ser arquivada automaticamente.
+- Ao retornar, a tarefa mantém status "Concluído" e ganha uma nova janela (conforme o prazo configurado no job de arquivamento) antes de voltar a ser arquivada automaticamente.

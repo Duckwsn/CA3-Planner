@@ -171,7 +171,7 @@ export default function BoardDetailsPage() {
   if (error) return <ErrorState title="Erro" description={error} onRetry={() => id && loadBoard(id)} />
   if (!selectedBoard) return <LoadingState message="Carregando board..." />
 
-  const boardTasks = id ? tasks.filter((t) => t.boardId === id) : []
+  const boardTasks = id ? tasks.filter((t) => t.boardId === id && !t.archived) : []
   const taskComments = detailTask ? getTaskComments(detailTask.id) : []
   const taskChecklist = detailTask ? getTaskItems(detailTask.id) : []
 

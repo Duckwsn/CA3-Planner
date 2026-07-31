@@ -2,7 +2,7 @@
 
 Sistema web de gerenciamento pedagógico com quadro Kanban, calendário, equipes e relatórios.
 
-**Stack:** React 19 · TypeScript 6 · Vite 8 · Tailwind CSS v4 · Zustand 5 · React Router 7 · Express 4 · Prisma 5 · SQLite
+**Stack:** React 19 · TypeScript 6 · Vite 8 · Tailwind CSS v4 · Zustand 5 · React Router 7 · Express 4 · Prisma 5 · PostgreSQL (SQLite disponível para dev local via `schema.sqlite.prisma`)
 
 ---
 
@@ -85,6 +85,7 @@ planner/
 │   │   ├── dashboard/
 │   │   ├── boards/
 │   │   ├── board-details/        # Kanban drag-and-drop
+│   │   ├── archived-tasks/       # Tarefas arquivadas (retornar/excluir)
 │   │   ├── calendar/
 │   │   ├── teams/
 │   │   ├── reports/
@@ -107,6 +108,7 @@ planner/
 │   └── src/
 │       ├── index.ts              # Entry point
 │       ├── seed.ts               # Dados iniciais
+│       ├── jobs/                 # Jobs agendados (arquivar, purgar)
 │       ├── controllers/
 │       ├── routes/
 │       ├── middleware/            # JWT auth, error handler
@@ -154,12 +156,17 @@ Express Router
 └── /api
     ├── /auth          → login, register, me
     ├── /boards        → CRUD boards
-    ├── /tasks         → CRUD tasks + listAll
+    ├── /tasks         → CRUD tasks + listAll + archive/unarchive/archived
     ├── /teams         → CRUD teams + members
     ├── /comments      → CRUD comments
     ├── /checklist     → CRUD checklist items
     ├── /attachments   → upload/download attachments
+    ├── /notifications → listar/marcar notificações
     └── /health        → health check
+
+Jobs agendados (node-cron, `server/src/jobs/`):
+- `archive-completed-tasks`: arquiva automaticamente tarefas "Concluído" após o prazo configurado (03:00).
+- `purge-archived-tasks`: exclui permanentemente tarefas arquivadas há mais de 30 dias (04:00), com fallback na subida do servidor.
 ```
 
 ### Modelo de dados
@@ -187,6 +194,9 @@ Team (1)──→ TeamMember (N)
 | **Dashboard** | KPIs (quadros, tarefas, conclusão, atrasos), gráficos de progresso |
 | **Relatórios** | Distribuição por prioridade/status/responsável, barras empilhadas |
 | **Notificações** | Toast de feedback + dropdown de notificações |
+| **Arquivamento automático** | Tarefas concluídas são arquivadas automaticamente por job agendado e somem do kanban na hora |
+| **Tarefas arquivadas** | Tela com modal de detalhes, "Retornar tarefa" ao quadro e "Excluir permanentemente" (com confirmação) |
+| **Limpeza automática** | Job exclui permanentemente tarefas arquivadas há mais de 30 dias |
 | **Design responsivo** | Sidebar colapsável, grid adaptável |
 | **Tema consistente** | Design system completo com CSS custom properties |
 
@@ -256,11 +266,14 @@ O design system está definido em `src/shared/styles/tokens.css` como CSS custom
 | `GET` | `/api/boards/:id` | Board por ID |
 | `PUT` | `/api/boards/:id` | Atualizar board |
 | `DELETE` | `/api/boards/:id` | Excluir board |
-| `GET` | `/api/tasks` | Listar todas as tarefas |
+| `GET` | `/api/tasks` | Listar todas as tarefas (exceto arquivadas) |
 | `GET` | `/api/tasks/board/:boardId` | Tarefas de um board |
+| `GET` | `/api/tasks/archived` | Listar tarefas arquivadas |
 | `POST` | `/api/tasks` | Criar tarefa |
 | `PUT` | `/api/tasks/:id` | Atualizar tarefa |
 | `PATCH` | `/api/tasks/:id/move` | Mover tarefa (coluna) |
+| `PATCH` | `/api/tasks/:id/archive` | Arquivar tarefa |
+| `PATCH` | `/api/tasks/:id/unarchive` | Retornar tarefa arquivada ao quadro |
 | `DELETE` | `/api/tasks/:id` | Excluir tarefa |
 | `GET` | `/api/teams` | Listar equipes |
 | `POST` | `/api/teams` | Criar equipe |

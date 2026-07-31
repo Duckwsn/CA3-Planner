@@ -93,9 +93,9 @@ export const useTaskStore = create<TaskState>()(
 
       archiveTask: async (id) => {
         try {
-          const updated = await TaskService.archive(id)
+          await TaskService.archive(id)
           set((s) => ({
-            tasks: s.tasks.map((t) => (t.id === id ? updated : t)),
+            tasks: s.tasks.filter((t) => t.id !== id),
             selectedTask: s.selectedTask?.id === id ? null : s.selectedTask,
           }))
         } catch {
