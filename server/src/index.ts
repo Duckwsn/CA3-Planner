@@ -16,6 +16,7 @@ import path from 'node:path'
 import { prisma } from './lib/prisma'
 import { seedDatabase } from './db/seed'
 import { startArchiveJob } from './jobs/archive-completed-tasks'
+import { startPurgeJob } from './jobs/purge-archived-tasks'
 
 const app = express()
 const PORT = process.env.PORT ?? 3001
@@ -64,6 +65,7 @@ async function startup() {
   }
 
   startArchiveJob()
+  startPurgeJob()
 
   app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT} (${isProd ? 'production' : 'development'})`)

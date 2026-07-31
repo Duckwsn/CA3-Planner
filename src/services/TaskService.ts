@@ -29,4 +29,8 @@ export const TaskService = {
   async archive(id: string): Promise<Task> {
     return apiPatch<Task>(`/tasks/${id}/archive`, {})
   },
+
+  async unarchive(id: string): Promise<Task> {
+    return apiPatch<Task>(`/tasks/${id}/unarchive`, {})
+  },
 }

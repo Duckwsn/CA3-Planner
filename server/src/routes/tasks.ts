@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { listAll, listByBoard, create, update, move, remove, archive, listArchived } from '../controllers/task-controller'
+import { listAll, listByBoard, create, update, move, remove, archive, unarchive, listArchived } from '../controllers/task-controller'
 import { authenticate } from '../middleware/auth'
 
 export const taskRouter = Router()
@@ -12,4 +12,5 @@ taskRouter.post('/', create)
 taskRouter.put('/:id', update)
 taskRouter.patch('/:id/move', move)
 taskRouter.patch('/:id/archive', archive)
+taskRouter.patch('/:id/unarchive', unarchive)
 taskRouter.delete('/:id', remove)

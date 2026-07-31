@@ -213,6 +213,28 @@ export async function archive(req: AuthRequest, res: Response) {
   }
 }
 
+export async function unarchive(req: AuthRequest, res: Response) {
+  try {
+    const id = req.params.id as string
+    const task = await prisma.task.findUnique({
+      where: { id },
+      include: { board: { select: { organizationId: true } } },
+    })
+    if (!task || task.board.organizationId !== req.organizationId) {
+      res.status(404).json({ error: 'Tarefa não encontrada' })
+      return
+    }
+    const updated = await prisma.task.update({
+      where: { id },
+      data: { archived: false, archivedAt: null, completedAt: new Date() },
+    })
+    res.json(updated)
+  } catch (err) {
+    console.error('[TASKS_UNARCHIVE]', err)
+    res.status(500).json({ error: 'Erro ao retornar tarefa' })
+  }
+}
+
 export async function listArchived(req: AuthRequest, res: Response) {
   try {
     const tasks = await prisma.task.findMany({
