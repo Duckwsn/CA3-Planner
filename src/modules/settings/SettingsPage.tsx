@@ -6,8 +6,9 @@ import { Select } from '../../shared/components/Select'
 import { Switch } from '../../shared/components/Switch'
 import { Button } from '../../shared/components/Button'
 import { useUIStore } from '../../stores/core/uiStore'
+import { useAuthStore } from '../../stores/core/authStore'
 import { useUserStore } from '../../stores/domain/userStore'
-import { loadProfile, saveProfile, type ProfileData } from '../../utils/profile'
+import { loadProfile, saveProfile } from '../../utils/profile'
 import { NOTIF_KEYS, setLanguage as saveLangPref } from '../../utils/profile'
 import { setTheme as applyThemePref, type ThemeMode } from '../../utils/theme'
 import { setDateFormat } from '../../utils/formatDate'
@@ -76,11 +77,18 @@ export default function SettingsPage() {
 
   const handleSaveProfile = useCallback(async () => {
     setSavingProfile(true)
-    // TODO: substituir por chamada de API quando o endpoint existir
-    const data: ProfileData = { name, cargo, avatarUrl: avatarPreview ?? '' }
-    saveProfile(data, userId || undefined)
-    addToast('success', 'Perfil atualizado com sucesso')
-    setSavingProfile(false)
+    try {
+      const updated = await AuthService.updateProfile({ name: name.trim(), role: cargo, avatar: avatarPreview ?? '' })
+      useAuthStore.getState().setUser(updated)
+      useUserStore.getState().setUser(updated)
+      saveProfile({ name: updated.name, cargo: updated.role, avatarUrl: avatarPreview ?? '' }, userId || undefined)
+      setName(updated.name)
+      addToast('success', 'Perfil atualizado com sucesso')
+    } catch {
+      addToast('error', 'Não foi possível atualizar o perfil. Tente novamente.')
+    } finally {
+      setSavingProfile(false)
+    }
   }, [name, cargo, avatarPreview, addToast, userId])
 
   const handleThemeChange = useCallback((checked: boolean) => {

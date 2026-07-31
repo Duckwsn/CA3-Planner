@@ -1,5 +1,26 @@
 # Log de Atualizações
 
+## 2026-07-31 — Edição de perfil persistida no banco (nome/cargo/avatar)
+
+### Adicionado
+- Endpoint `PATCH /auth/me` para atualizar nome, cargo e avatar do usuário logado no banco.
+- Método `AuthService.updateProfile()` e ação `setUser` no `authStore`.
+- Configurações passou a salvar o perfil via API — antes só salvava no localStorage, e o nome novo não refletia no dropdown de responsável, no seletor de membros nem nas equipes.
+- Tela de Equipes passou a exibir o nome/email/cargo ao vivo da conta para membros vinculados (`user?.name ?? name`), em vez do snapshot gravado no cadastro.
+
+### Arquivos alterados
+- server/src/controllers/auth-controller.ts
+- server/src/routes/auth.ts
+- src/services/AuthService.ts
+- src/stores/core/authStore.ts
+- src/modules/settings/SettingsPage.tsx
+- src/modules/teams/TeamsPage.tsx
+
+### Observações
+- Renomear não reescreve retroativamente o responsável (`assignee`) já gravado em tarefas existentes — é texto livre; apenas novos cadastros usam o nome novo.
+
+---
+
 ## 2026-07-31 — Equipes integradas a contas reais + proteção de quadros
 
 ### Adicionado

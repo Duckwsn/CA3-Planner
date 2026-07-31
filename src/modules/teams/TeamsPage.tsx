@@ -93,7 +93,7 @@ export default function TeamsPage() {
                   {/* Members avatars */}
                   <div className="flex items-center gap-1 mb-4">
                     {team.members?.slice(0, 5).map((m) => (
-                      <Avatar key={m.id} name={m.name} size="sm" />
+                      <Avatar key={m.id} name={m.user?.name ?? m.name} size="sm" />
                     ))}
                     {team.members && team.members.length > 5 && (
                       <span className="text-size-caption text-[var(--color-text-secondary)] ml-1">+{team.members.length - 5}</span>
@@ -113,10 +113,10 @@ export default function TeamsPage() {
                       {team.members.map((m) => (
                         <div key={m.id} className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <Avatar name={m.name} size="sm" />
+                            <Avatar name={m.user?.name ?? m.name} size="sm" />
                             <div>
-                              <p className="text-size-body-small font-medium text-[var(--color-text-primary)]">{m.name}</p>
-                              <p className="text-size-caption text-[var(--color-text-secondary)]">{m.role || m.email}</p>
+                              <p className="text-size-body-small font-medium text-[var(--color-text-primary)]">{m.user?.name ?? m.name}</p>
+                              <p className="text-size-caption text-[var(--color-text-secondary)]">{m.user?.role || m.user?.email || m.role || m.email}</p>
                             </div>
                           </div>
                           <button

@@ -14,6 +14,10 @@ export const AuthService = {
     return apiGet<User>('/auth/me')
   },
 
+  async updateProfile(data: { name: string; role?: string; avatar?: string }): Promise<User> {
+    return apiPatch<User>('/auth/me', data)
+  },
+
   async changePassword(senhaAtual: string, novaSenha: string): Promise<{ mensagem: string }> {
     return apiPatch<{ mensagem: string }>('/auth/me/password', { senhaAtual, novaSenha })
   },

@@ -154,7 +154,7 @@ BrowserRouter
 ```
 Express Router
 └── /api
-    ├── /auth          → login, register, me
+    ├── /auth          → login, register, me, atualizar perfil
     ├── /boards        → CRUD boards
     ├── /tasks         → CRUD tasks + listAll + archive/unarchive/archived
     ├── /teams         → CRUD teams + members (vínculo com contas reais)
@@ -264,6 +264,8 @@ O design system está definido em `src/shared/styles/tokens.css` como CSS custom
 | `POST` | `/api/auth/login` | Login |
 | `POST` | `/api/auth/register` | Registro |
 | `GET` | `/api/auth/me` | Dados do usuário logado |
+| `PATCH` | `/api/auth/me` | Atualizar perfil (nome, cargo, avatar) |
+| `PATCH` | `/api/auth/me/password` | Alterar senha |
 | `GET` | `/api/boards` | Listar boards |
 | `POST` | `/api/boards` | Criar board |
 | `GET` | `/api/boards/:id` | Board por ID |

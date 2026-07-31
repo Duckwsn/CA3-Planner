@@ -77,6 +77,41 @@ export async function login(req: Request, res: Response) {
   }
 }
 
+export async function updateProfile(req: Request, res: Response) {
+  try {
+    const userId = (req as any).userId
+    const { name, role, avatar } = req.body
+    if (!name || !name.trim()) {
+      res.status(400).json({ error: 'Nome é obrigatório' })
+      return
+    }
+    const user = await prisma.user.findUnique({ where: { id: userId } })
+    if (!user) {
+      res.status(404).json({ error: 'Usuário não encontrado' })
+      return
+    }
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name: name.trim(),
+        role: role ?? user.role,
+        avatar: avatar ?? user.avatar,
+      },
+    })
+    res.json({
+      id: updated.id,
+      name: updated.name,
+      email: updated.email,
+      role: updated.role,
+      avatar: updated.avatar,
+      organizationId: updated.organizationId,
+    })
+  } catch (err) {
+    console.error('[UPDATE_PROFILE]', err)
+    res.status(500).json({ error: 'Erro ao atualizar perfil' })
+  }
+}
+
 export async function me(req: Request, res: Response) {
   try {
     const userId = (req as any).userId

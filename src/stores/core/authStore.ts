@@ -11,6 +11,7 @@ interface AuthState {
   register: (name: string, email: string, password: string) => Promise<boolean>
   logout: () => void
   loadUser: () => Promise<void>
+  setUser: (user: User) => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -41,6 +42,8 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => set({ isAuthenticated: false, token: null, user: null }),
+
+      setUser: (user) => set({ user }),
 
       loadUser: async () => {
         const { token } = get()
