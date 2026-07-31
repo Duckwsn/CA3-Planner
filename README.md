@@ -157,7 +157,8 @@ Express Router
     ├── /auth          → login, register, me
     ├── /boards        → CRUD boards
     ├── /tasks         → CRUD tasks + listAll + archive/unarchive/archived
-    ├── /teams         → CRUD teams + members
+    ├── /teams         → CRUD teams + members (vínculo com contas reais)
+    ├── /users         → listar usuários da organização
     ├── /comments      → CRUD comments
     ├── /checklist     → CRUD checklist items
     ├── /attachments   → upload/download attachments
@@ -177,6 +178,7 @@ User (1)──→ Board (N)──→ Task (N)──→ Comment (N)
                               └──→ Attachment (N)
 
 Team (1)──→ TeamMember (N)
+User (1)──→ TeamMember (N)
 ```
 
 ---
@@ -190,7 +192,8 @@ Team (1)──→ TeamMember (N)
 | **Tarefas** | CRUD completo, prioridade (Baixa/Média/Alta/Urgente), responsável, data de entrega |
 | **Detalhe da tarefa** | Drawer lateral com comentários, checklist e anexos |
 | **Calendário** | Visão mensal com tarefas por dia, indicadores visuais |
-| **Equipes** | CRUD de equipes, gerenciamento de membros |
+| **Equipes** | CRUD de equipes com membros vinculados a contas reais da organização |
+| **Responsável (tarefas)** | Dropdown com apenas contas reais da organização |
 | **Dashboard** | KPIs (quadros, tarefas, conclusão, atrasos), gráficos de progresso |
 | **Relatórios** | Distribuição por prioridade/status/responsável, barras empilhadas |
 | **Notificações** | Toast de feedback + dropdown de notificações |
@@ -277,6 +280,9 @@ O design system está definido em `src/shared/styles/tokens.css` como CSS custom
 | `DELETE` | `/api/tasks/:id` | Excluir tarefa |
 | `GET` | `/api/teams` | Listar equipes |
 | `POST` | `/api/teams` | Criar equipe |
+| `POST` | `/api/teams/:id/members` | Adicionar membro (por `userId` de conta real) |
+| `DELETE` | `/api/teams/:id/members/:memberId` | Remover membro |
+| `GET` | `/api/users` | Listar usuários (contas) da organização |
 | `GET` | `/api/comments/task/:taskId` | Comentários de uma tarefa |
 | `GET` | `/api/checklist/task/:taskId` | Checklist de uma tarefa |
 | `GET` | `/api/attachments/task/:taskId` | Anexos de uma tarefa |

@@ -11,7 +11,7 @@ interface TeamState {
   addTeam: (data: { name: string; description?: string }) => Promise<void>
   updateTeam: (id: string, data: { name?: string; description?: string }) => Promise<void>
   deleteTeam: (id: string) => Promise<void>
-  addMember: (teamId: string, data: { name: string; email?: string; role?: string }) => Promise<void>
+  addMember: (teamId: string, data: { userId: string }) => Promise<void>
   removeMember: (teamId: string, memberId: string) => Promise<void>
 }
 

@@ -7,8 +7,10 @@ import { Avatar } from '../../shared/components/Avatar'
 import { EmptyState } from '../../shared/components/EmptyState'
 import { ErrorState } from '../../shared/components/ErrorState'
 import { Modal } from '../../shared/components/Modal'
+import { Select } from '../../shared/components/Select'
 import { useTeamStore } from '../../stores/domain/teamStore'
-import type { Team } from '../../types'
+import { TeamService } from '../../services/TeamService'
+import type { Team, User } from '../../types'
 
 export default function TeamsPage() {
   const { teams, loading, error, loadTeams, addTeam, updateTeam, deleteTeam, addMember, removeMember } = useTeamStore()
@@ -17,10 +19,15 @@ export default function TeamsPage() {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const [editingTeam, setEditingTeam] = useState<Team | null>(null)
   const [form, setForm] = useState({ name: '', description: '' })
-  const [memberForm, setMemberForm] = useState({ name: '', email: '', role: '' })
+  const [memberUserId, setMemberUserId] = useState('')
+  const [users, setUsers] = useState<User[]>([])
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
   useEffect(() => { loadTeams() }, [loadTeams])
+
+  useEffect(() => {
+    TeamService.listUsers().then(setUsers).catch(() => setUsers([]))
+  }, [])
 
   function openCreate() {
     setEditingTeam(null)
@@ -45,9 +52,9 @@ export default function TeamsPage() {
   }
 
   async function handleAddMember() {
-    if (!memberOpen || !memberForm.name.trim()) return
-    await addMember(memberOpen, memberForm)
-    setMemberForm({ name: '', email: '', role: '' })
+    if (!memberOpen || !memberUserId) return
+    await addMember(memberOpen, { userId: memberUserId })
+    setMemberUserId('')
   }
 
   if (error) return <ErrorState title="Erro" description={error} onRetry={loadTeams} />
@@ -176,24 +183,24 @@ export default function TeamsPage() {
       </Modal>
 
       {/* Add Member Modal */}
-      <Modal open={!!memberOpen} onClose={() => setMemberOpen(null)} title="Adicionar Membro" size="sm">
+      <Modal open={!!memberOpen} onClose={() => { setMemberOpen(null); setMemberUserId('') }} title="Adicionar Membro" size="sm">
         <div className="space-y-4">
-          <div>
-            <label className="block text-size-body-small font-medium text-[var(--gray-700)] mb-1.5">Nome</label>
-            <input value={memberForm.name} onChange={(e) => setMemberForm({ ...memberForm, name: e.target.value })} placeholder="Nome do membro" className="w-full h-11 px-3 rounded-[var(--radius-md)] border border-[var(--gray-300)] bg-[var(--color-bg-input)] text-size-body-small focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-900)]" autoFocus />
-          </div>
-          <div>
-            <label className="block text-size-body-small font-medium text-[var(--gray-700)] mb-1.5">Email</label>
-            <input value={memberForm.email} onChange={(e) => setMemberForm({ ...memberForm, email: e.target.value })} placeholder="email@exemplo.com" className="w-full h-11 px-3 rounded-[var(--radius-md)] border border-[var(--gray-300)] bg-[var(--color-bg-input)] text-size-body-small focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-900)]" />
-          </div>
-          <div>
-            <label className="block text-size-body-small font-medium text-[var(--gray-700)] mb-1.5">Função</label>
-            <input value={memberForm.role} onChange={(e) => setMemberForm({ ...memberForm, role: e.target.value })} placeholder="Professor, Coordenador..." className="w-full h-11 px-3 rounded-[var(--radius-md)] border border-[var(--gray-300)] bg-[var(--color-bg-input)] text-size-body-small focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-900)]" />
-          </div>
+          <Select
+            label="Usuário"
+            placeholder="Selecione uma conta"
+            value={memberUserId}
+            onChange={(e) => setMemberUserId(e.target.value)}
+            options={users
+              .filter((u) => !teams.find((t) => t.id === memberOpen)?.members.some((m) => m.userId === u.id))
+              .map((u) => ({ value: u.id, label: `${u.name} · ${u.email}` }))}
+          />
+          <p className="text-size-caption text-[var(--gray-400)]">
+            Apenas contas reais podem ser adicionadas como membros.
+          </p>
         </div>
         <div className="flex justify-end gap-3 mt-6" slot="footer">
-          <Button variant="ghost" size="md" onClick={() => setMemberOpen(null)}>Cancelar</Button>
-          <Button variant="primary" size="md" onClick={handleAddMember} disabled={!memberForm.name.trim()}>Adicionar</Button>
+          <Button variant="ghost" size="md" onClick={() => { setMemberOpen(null); setMemberUserId('') }}>Cancelar</Button>
+          <Button variant="primary" size="md" onClick={handleAddMember} disabled={!memberUserId}>Adicionar</Button>
         </div>
       </Modal>
 

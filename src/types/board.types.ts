@@ -5,7 +5,7 @@ export interface Board {
   title: string
   description: string
   color: string
-  userId: string
+  userId: string | null
   organizationId: string
   createdAt: string
   updatedAt: string

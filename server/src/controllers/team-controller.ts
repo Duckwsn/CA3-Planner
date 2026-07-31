@@ -7,7 +7,13 @@ export async function list(req: AuthRequest, res: Response) {
   try {
     const teams = await prisma.team.findMany({
       where: { organizationId: req.organizationId },
-      include: { members: true },
+      include: {
+        members: {
+          include: {
+            user: { select: { id: true, name: true, email: true, role: true, avatar: true } },
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     })
     res.json(teams)
@@ -81,20 +87,10 @@ export async function listAssignableMembers(req: AuthRequest, res: Response) {
     const users = await prisma.user.findMany({
       where: { organizationId: req.organizationId },
       select: { name: true },
+      orderBy: { name: 'asc' },
     })
-    const teamMembers = await prisma.teamMember.findMany({
-      where: { team: { organizationId: req.organizationId } },
-      select: { name: true },
-    })
-
-    const seen = new Map<string, string>()
-    for (const { name } of [...users, ...teamMembers]) {
-      const key = name.trim().toLowerCase()
-      if (!seen.has(key)) seen.set(key, name.trim())
-    }
-
-    const options = [...seen.values()].sort((a, b) => a.localeCompare(b, 'pt-BR'))
-    res.json(options)
+    const options = users.map((u) => u.name.trim()).filter(Boolean)
+    res.json([...new Set(options)])
   } catch (err) {
     console.error('[MEMBERS_LIST_ASSIGNABLE]', err)
     res.status(500).json({ error: 'Erro ao listar responsáveis' })
@@ -104,9 +100,9 @@ export async function listAssignableMembers(req: AuthRequest, res: Response) {
 export async function addMember(req: AuthRequest, res: Response) {
   try {
     const id = req.params.id as string
-    const { name, email, role } = req.body
-    if (!name) {
-      res.status(400).json({ error: 'Nome é obrigatório' })
+    const { userId } = req.body
+    if (!userId) {
+      res.status(400).json({ error: 'Usuário é obrigatório' })
       return
     }
     const team = await prisma.team.findFirst({
@@ -116,8 +112,24 @@ export async function addMember(req: AuthRequest, res: Response) {
       res.status(404).json({ error: 'Equipe não encontrada' })
       return
     }
+    const user = await prisma.user.findFirst({
+      where: { id: userId, organizationId: req.organizationId },
+    })
+    if (!user) {
+      res.status(404).json({ error: 'Usuário não encontrado' })
+      return
+    }
     const member = await prisma.teamMember.create({
-      data: { teamId: id, name, email: email ?? '', role: role ?? '' },
+      data: {
+        teamId: id,
+        userId: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      include: {
+        user: { select: { id: true, name: true, email: true, role: true, avatar: true } },
+      },
     })
 
     await notifyOrganizationMembers({
@@ -125,7 +137,7 @@ export async function addMember(req: AuthRequest, res: Response) {
       excludeUserId: req.userId!,
       type: 'member_added',
       title: 'Novo membro',
-      message: `${name} foi adicionado à equipe "${team.name}"`,
+      message: `${user.name} foi adicionado à equipe "${team.name}"`,
     })
 
     res.status(201).json(member)

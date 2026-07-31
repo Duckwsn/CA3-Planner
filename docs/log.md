@@ -1,5 +1,35 @@
 # Log de Atualizações
 
+## 2026-07-31 — Equipes integradas a contas reais + proteção de quadros
+
+### Adicionado
+- Endpoint `GET /users`: lista as contas da organização (id, nome, email, cargo) para seleção de membros.
+- Relação `TeamMember.userId` → `User`: membros de equipe agora referenciam contas reais cadastradas.
+- Tela de Equipes: "Adicionar Membro" passou a usar seletor de contas reais (nome · email), em vez de campos de texto livre.
+
+### Alterado
+- `addMember` (`POST /teams/:id/members`) agora exige `userId` de uma conta da organização e preenche nome/email/cargo a partir dela.
+- `listAssignableMembers` passou a retornar apenas contas reais — nomes de membros sem conta não aparecem mais como responsável em tarefas.
+- `Board.userId` tornou-se opcional com `onDelete: SetNull` — excluir uma conta não apaga mais os quadros dela (evita perda de dados ao remover contas placeholder no banco).
+
+### Arquivos alterados
+- server/prisma/schema.prisma
+- server/src/controllers/user-controller.ts (novo)
+- server/src/routes/users.ts (novo)
+- server/src/index.ts
+- server/src/controllers/team-controller.ts
+- src/services/TeamService.ts
+- src/stores/domain/teamStore.ts
+- src/modules/teams/TeamsPage.tsx
+- src/types/team.types.ts
+- src/types/board.types.ts
+
+### Observações
+- Membros antigos sem conta (ex.: dados do seed) permanecem visíveis nas equipes, mas não são mais exibidos como responsável.
+- Mudança de schema aplicada via `prisma db push` no deploy.
+
+---
+
 ## 2026-07-31 — Correção: kanban não atualizava ao arquivar + `listAll` ignorava arquivadas
 
 ### Corrigido

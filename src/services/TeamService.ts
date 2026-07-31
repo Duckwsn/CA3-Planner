@@ -1,5 +1,5 @@
 import { apiGet, apiPost, apiPut, apiDelete } from '../core/api/httpClient'
-import type { Team, TeamMember } from '../types'
+import type { Team, TeamMember, User } from '../types'
 
 export const TeamService = {
   async list(): Promise<Team[]> {
@@ -18,12 +18,16 @@ export const TeamService = {
     await apiDelete(`/teams/${id}`)
   },
 
-  async addMember(teamId: string, data: { name: string; email?: string; role?: string }): Promise<TeamMember> {
+  async addMember(teamId: string, data: { userId: string }): Promise<TeamMember> {
     return apiPost<TeamMember>(`/teams/${teamId}/members`, data)
   },
 
   async removeMember(teamId: string, memberId: string): Promise<void> {
     await apiDelete(`/teams/${teamId}/members/${memberId}`)
+  },
+
+  async listUsers(): Promise<User[]> {
+    return apiGet<User[]>('/users')
   },
 
   async listAssignableMembers(): Promise<string[]> {

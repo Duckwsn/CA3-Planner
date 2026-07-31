@@ -7,6 +7,7 @@ import { authRouter } from './routes/auth'
 import { boardRouter } from './routes/boards'
 import { taskRouter } from './routes/tasks'
 import { teamRouter } from './routes/teams'
+import { userRouter } from './routes/users'
 import { commentRouter } from './routes/comments'
 import { checklistRouter } from './routes/checklist'
 import { attachmentRouter } from './routes/attachments'
@@ -38,6 +39,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/boards', boardRouter)
 app.use('/api/tasks', taskRouter)
 app.use('/api/teams', teamRouter)
+app.use('/api/users', userRouter)
 app.use('/api/comments', commentRouter)
 app.use('/api/checklist', checklistRouter)
 app.use('/api/attachments', attachmentRouter)
