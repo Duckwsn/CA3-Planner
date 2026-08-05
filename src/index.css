@@ -116,10 +116,48 @@
   --color-ca3-navy-800: #1B2452;
   --color-ca3-navy-900: #12162E;
   --color-ca3-navy-border: #2A3159;
-  --color-ca3-amber-500: #F5A623;
-  --color-ca3-amber-600: #E0951A;
+  --color-ca3-amber-500: #f59e0b;
+  --color-ca3-amber-600: #d97706;
   --color-ca3-text-light-primary: #F5F7FA;
   --color-ca3-text-light-secondary: #B4B9CC;
+
+  /* v2 "Foco Claro" */
+  --color-brand: var(--color-brand);
+  --color-brand-hover: var(--color-brand-hover);
+  --color-brand-bright: var(--color-brand-bright);
+  --color-brand-ink: var(--color-brand-ink);
+  --color-focus-ring: var(--color-focus-ring);
+  --color-success: var(--color-success);
+  --color-success-bg: var(--color-success-bg);
+  --color-warning: var(--color-warning);
+  --color-warning-bg: var(--color-warning-bg);
+  --color-danger: var(--color-danger);
+  --color-danger-bg: var(--color-danger-bg);
+  --color-info: var(--color-info);
+  --color-info-bg: var(--color-info-bg);
+  --color-neutral: var(--color-neutral);
+  --color-neutral-bg: var(--color-neutral-bg);
+  --font-mono: var(--font-mono);
+
+  --color-scale-primary-950: var(--scale-primary-950);
+  --color-scale-primary-900: var(--scale-primary-900);
+  --color-scale-primary-800: var(--scale-primary-800);
+  --color-scale-primary-700: var(--scale-primary-700);
+  --color-scale-primary-600: var(--scale-primary-600);
+  --color-scale-primary-500: var(--scale-primary-500);
+  --color-scale-primary-400: var(--scale-primary-400);
+  --color-scale-primary-300: var(--scale-primary-300);
+  --color-scale-primary-200: var(--scale-primary-200);
+  --color-scale-primary-100: var(--scale-primary-100);
+  --color-scale-primary-50: var(--scale-primary-50);
+
+  --color-scale-accent-600: var(--scale-accent-600);
+  --color-scale-accent-500: var(--scale-accent-500);
+  --color-scale-accent-400: var(--scale-accent-400);
+  --color-scale-accent-300: var(--scale-accent-300);
+  --color-scale-accent-200: var(--scale-accent-200);
+  --color-scale-accent-100: var(--scale-accent-100);
+  --color-scale-accent-50: var(--scale-accent-50);
 }
 
 @layer base {
@@ -140,6 +178,20 @@
   .text-size-body { font-size: var(--text-body); line-height: var(--text-body-height); }
   .text-size-body-small { font-size: var(--text-body-small); line-height: var(--text-body-small-height); }
   .text-size-caption { font-size: var(--text-caption); line-height: var(--text-caption-height); }
+  .text-number {
+    font-size: var(--text-number);
+    line-height: var(--text-number-height);
+    font-weight: 800;
+    letter-spacing: -1px;
+    font-variant-numeric: tabular-nums;
+  }
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+}
+
+/* v2 — focus ring global (azul-info, WCAG AA) */
+:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
 }
 
 @keyframes scaleUp {
@@ -183,14 +235,14 @@
   --progress-track: #2A3159;
   --progress-fill: #6C7DF0;
   --sidebar-item-text: #C7CCE0;
-  --sidebar-item-active-bg: #F5A623;
+  --sidebar-item-active-bg: #f59e0b;
   --sidebar-item-active-text: #12162E;
 
   --color-sidebar-bg: #0F1330;
-  --color-sidebar-item-active-bg: #F5A623;
+  --color-sidebar-item-active-bg: #f59e0b;
   --color-sidebar-item-active-text: #12162E;
   --color-sidebar-item-inactive: #C7CCE0;
-  --color-sidebar-logo-bg: #F5A623;
+  --color-sidebar-logo-bg: #f59e0b;
 
   --color-bg-page: #12162E;
   --color-content-bg: #12162E;
@@ -236,16 +288,16 @@
   --color-primary-100: #DAE3F7;
   --color-primary-50: #232A52;
 
-  --color-gold-900: #FDF2CE;
-  --color-gold-800: #F9E3AC;
-  --color-gold-700: #F4D48A;
-  --color-gold-600: #F0C568;
-  --color-gold-500: #ECB646;
-  --color-gold-400: #D9A233;
-  --color-gold-300: #C89221;
-  --color-gold-200: #A67B1E;
-  --color-gold-100: #8B6316;
-  --color-gold-50: #4A350E;
+  --color-gold-900: #fffbeb;
+  --color-gold-800: #fef3c7;
+  --color-gold-700: #fde68a;
+  --color-gold-600: #fcd34d;
+  --color-gold-500: #f59e0b;
+  --color-gold-400: #fbbf24;
+  --color-gold-300: #d97706;
+  --color-gold-200: #b45309;
+  --color-gold-100: #92400e;
+  --color-gold-50: #3f2305;
 
   --color-success-900: #BBF7D0;
   --color-success-800: #86EFAC;
@@ -290,4 +342,42 @@
   --color-info-200: #1E40AF;
   --color-info-100: #1E3A8A;
   --color-info-50: #172554;
+
+  /* v2 "Foco Claro" — dark */
+  --color-focus-ring: #60a5fa;
+  --color-success: #22c55e;
+  --color-success-bg: #0f3d1f;
+  --color-warning: #fb923c;
+  --color-warning-bg: #3d1e08;
+  --color-danger: #f87171;
+  --color-danger-bg: #3f0e0e;
+  --color-info: #60a5fa;
+  --color-info-bg: #172554;
+  --color-neutral: #9ca3af;
+  --color-neutral-bg: #232a52;
+  --color-brand: #f59e0b;
+  --color-brand-hover: #fbbf24;
+  --color-brand-bright: #facc15;
+  --color-brand-ink: #12162e;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+
+  --scale-primary-950: #0b1220;
+  --scale-primary-900: #d8e1f5;
+  --scale-primary-800: #aebee9;
+  --scale-primary-700: #7d94d8;
+  --scale-primary-600: #4f6fc4;
+  --scale-primary-500: #3154a8;
+  --scale-primary-400: #27438a;
+  --scale-primary-300: #1e3666;
+  --scale-primary-200: #16294e;
+  --scale-primary-100: #16294e;
+  --scale-primary-50: #1a2240;
+
+  --scale-accent-600: #fde68a;
+  --scale-accent-500: #f59e0b;
+  --scale-accent-400: #fbbf24;
+  --scale-accent-300: #fcd34d;
+  --scale-accent-200: #d97706;
+  --scale-accent-100: #b45309;
+  --scale-accent-50: #3f2305;
 }

@@ -71,7 +71,7 @@ export default function RegisterPage() {
         <div className="bg-white rounded-[16px] p-[40px_32px] shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
           {/* Logo */}
           <div className="flex flex-col items-center mb-6">
-            <div className="w-[72px] h-[72px] rounded-[16px] bg-[#F5A623] flex items-center justify-center mb-3">
+            <div className="w-[72px] h-[72px] rounded-[16px] bg-[var(--color-brand)] flex items-center justify-center mb-3">
               <span className="text-[#1B2452] font-extrabold text-[22px] leading-none">CA3</span>
             </div>
             <h1 className="text-[20px] font-bold text-[var(--color-text-primary)]">CA3 Planner</h1>
@@ -203,7 +203,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={!termsAccepted || loading}
-              className="w-full h-[46px] rounded-[8px] font-bold text-[#1B2452] bg-[#F5A623] hover:bg-[#E0951A] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-[46px] rounded-[8px] font-bold text-[#1B2452] bg-[var(--color-brand)] hover:bg-[var(--color-brand-hover)] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Criando conta...' : 'Criar conta'}
             </button>

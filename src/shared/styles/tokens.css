@@ -1,9 +1,50 @@
 :root {
+  /* ─── v2 "Foco Claro" — escala primária (azul-índigo) ─── */
+  --scale-primary-950: #0b1220;
+  --scale-primary-900: #0f1f3d;
+  --scale-primary-800: #16294e;
+  --scale-primary-700: #1e3666;
+  --scale-primary-600: #27438a;
+  --scale-primary-500: #3154a8;
+  --scale-primary-400: #4f6fc4;
+  --scale-primary-300: #7d94d8;
+  --scale-primary-200: #aebee9;
+  --scale-primary-100: #d8e1f5;
+  --scale-primary-50: #f0f3fb;
+
+  /* ─── v2 — escala de acento (âmbar, marca/CTA) ─── */
+  --scale-accent-600: #d97706;
+  --scale-accent-500: #f59e0b;
+  --scale-accent-400: #fbbf24;
+  --scale-accent-300: #fcd34d;
+  --scale-accent-200: #fde68a;
+  --scale-accent-100: #fef3c7;
+  --scale-accent-50: #fffbeb;
+  --color-brand: #f59e0b;
+  --color-brand-hover: #d97706;
+  --color-brand-bright: #facc15;
+  --color-brand-ink: #0f1f3d;
+
+  /* ─── v2 — tokens semânticos (status desacoplados do acento) ─── */
+  --color-success: #16a34a;
+  --color-success-bg: #dcfce7;
+  --color-warning: #ea580c;
+  --color-warning-bg: #ffedd5;
+  --color-danger: #dc2626;
+  --color-danger-bg: #fee2e2;
+  --color-info: #2563eb;
+  --color-info-bg: #dbeafe;
+  --color-neutral: #6b7280;
+  --color-neutral-bg: #f3f4f6;
+
+  /* ─── v2 — focus ring (azul-info, AA) ─── */
+  --color-focus-ring: #2563eb;
+
   --color-sidebar-bg: #1B2452;
-  --color-sidebar-item-active-bg: #F5A623;
+  --color-sidebar-item-active-bg: #f59e0b;
   --color-sidebar-item-active-text: #1B2452;
   --color-sidebar-item-inactive: #E4E7F1;
-  --color-sidebar-logo-bg: #F5A623;
+  --color-sidebar-logo-bg: #f59e0b;
 
   --color-content-bg: #F7F8FC;
 
@@ -45,16 +86,16 @@
   --color-primary-100: #DAE3F7;
   --color-primary-50: #F0F4FB;
 
-  --color-gold-900: #8B6316;
-  --color-gold-800: #A67B1E;
-  --color-gold-700: #C89221;
-  --color-gold-600: #D9A233;
-  --color-gold-500: #ECB646;
-  --color-gold-400: #F0C568;
-  --color-gold-300: #F4D48A;
-  --color-gold-200: #F9E3AC;
-  --color-gold-100: #FDF2CE;
-  --color-gold-50: #FEFAEF;
+  --color-gold-900: #78350f;
+  --color-gold-800: #92400e;
+  --color-gold-700: #b45309;
+  --color-gold-600: #d97706;
+  --color-gold-500: #f59e0b;
+  --color-gold-400: #fbbf24;
+  --color-gold-300: #fcd34d;
+  --color-gold-200: #fde68a;
+  --color-gold-100: #fef3c7;
+  --color-gold-50: #fffbeb;
 
   --color-success-900: #14532D;
   --color-success-800: #166534;
@@ -119,6 +160,7 @@
 
   --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-secondary: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
 
   --font-weight-regular: 400;
   --font-weight-medium: 500;
@@ -149,6 +191,8 @@
   --text-body-small-height: 20px;
   --text-caption: 12px;
   --text-caption-height: 16px;
+  --text-number: 34px;
+  --text-number-height: 40px;
 
   --space-1: 4px;
   --space-2: 8px;

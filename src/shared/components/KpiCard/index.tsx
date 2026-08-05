@@ -13,7 +13,7 @@ export function KpiCard({ icon, title, value, variation, variationType = 'positi
             {title}
           </p>
           <div className="flex items-baseline gap-2">
-            <span className="text-size-h4 font-bold text-[var(--color-text-primary)] leading-none">
+            <span className="text-size-h4 font-bold text-[var(--color-text-primary)] leading-none tabular-nums">
               {value}
             </span>
             {variation && (
