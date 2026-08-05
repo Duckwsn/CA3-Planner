@@ -1,15 +1,15 @@
 import type { BadgeProps } from './Badge.types'
 
 const variantClasses: Record<string, string> = {
-  default: 'bg-[var(--gray-100)] text-[var(--gray-700)]',
-  success: 'bg-[var(--color-success-100)] text-[var(--color-success-700)]',
-  warning: 'bg-[var(--color-warning-100)] text-[var(--color-warning-700)]',
-  danger: 'bg-[var(--color-danger-100)] text-[var(--color-danger-700)]',
-  info: 'bg-[var(--color-info-100)] text-[var(--color-info-700)]',
-  neutral: 'bg-[var(--gray-200)] text-[var(--gray-600)]',
-  urgent: 'bg-[var(--color-badge-urgent-bg)] text-[var(--color-badge-urgent-text)]',
-  high: 'bg-[var(--color-badge-high-bg)] text-[var(--color-badge-high-text)]',
-  medium: 'bg-[var(--color-badge-medium-bg)] text-[var(--color-badge-medium-text)]',
+  default: 'bg-[var(--color-neutral-bg)] text-[var(--gray-600)]',
+  success: 'bg-[var(--color-success-bg)] text-[var(--color-success)]',
+  warning: 'bg-[var(--color-warning-bg)] text-[var(--color-warning)]',
+  danger: 'bg-[var(--color-danger-bg)] text-[var(--color-danger)]',
+  info: 'bg-[var(--color-info-bg)] text-[var(--color-info)]',
+  neutral: 'bg-[var(--color-neutral-bg)] text-[var(--color-neutral)]',
+  urgent: 'bg-[var(--color-danger-bg)] text-[var(--color-danger)]',
+  high: 'bg-[var(--color-warning-bg)] text-[var(--color-warning)]',
+  medium: 'bg-[var(--color-info-bg)] text-[var(--color-info)]',
 }
 
 export function Badge({ variant = 'default', className = '', children, ...props }: BadgeProps) {

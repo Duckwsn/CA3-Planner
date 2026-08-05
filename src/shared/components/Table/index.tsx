@@ -33,10 +33,10 @@ function TableInner<T extends Record<string, unknown>>({ columns, data, loading,
   if (!data.length) return <EmptyState message={emptyMessage ?? 'Nenhum registro encontrado.'} />
 
   return (
-    <div className={`overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--gray-200)] ${className}`}>
+    <div className={`overflow-x-auto rounded-[var(--radius-lg)] border border-[var(--color-border-light)] ${className}`}>
       <table className="w-full border-collapse">
         <thead>
-          <tr className="bg-[var(--gray-50)]">
+          <tr className="bg-[var(--color-bg-subtle,var(--gray-50))]">
             {columns.map((col) => (
               <th
                 key={col.key}
@@ -57,14 +57,14 @@ function TableInner<T extends Record<string, unknown>>({ columns, data, loading,
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-[var(--gray-200)]">
+        <tbody className="divide-y divide-[var(--color-border-light)]">
           {sorted.map((item, idx) => (
             <tr
               key={(item.id as string) ?? idx}
               onClick={() => onRowClick?.(item)}
               className={`
                 bg-[var(--color-bg-surface)] transition-colors
-                ${onRowClick ? 'cursor-pointer hover:bg-[var(--gray-50)]' : ''}
+                ${onRowClick ? 'cursor-pointer hover:bg-[var(--color-bg-subtle,var(--gray-50))]' : ''}
               `}
             >
               {columns.map((col) => (

@@ -20,6 +20,8 @@ import { Modal } from '../../shared/components/Modal'
 import { Input } from '../../shared/components/Input'
 import { Select } from '../../shared/components/Select'
 import { EmptyState } from '../../shared/components/EmptyState'
+import { Tabs } from '../../shared/components/Tabs'
+import { Pagination } from '../../shared/components/Pagination'
 import { AdminService } from '../../services/AdminService'
 import { useUIStore } from '../../stores/core/uiStore'
 import type {
@@ -82,6 +84,8 @@ export default function AdminPage() {
 
   const [users, setUsers] = useState<AdminUser[]>([])
   const [usersLoading, setUsersLoading] = useState(false)
+  const [usersPage, setUsersPage] = useState(1)
+  const USERS_PER_PAGE = 8
 
   const [orgs, setOrgs] = useState<AdminOrganization[]>([])
 
@@ -190,6 +194,11 @@ export default function AdminPage() {
     if (isAdmin && selectedTable) loadTableRows()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAdmin, selectedTable])
+
+  useEffect(() => {
+    if (usersPage > totalUsersPages) setUsersPage(totalUsersPages)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [users.length])
 
   async function handleSaveUser() {
     if (!userForm.name.trim() || !userForm.email.trim()) return
@@ -355,6 +364,13 @@ export default function AdminPage() {
     return base + rowColumns.join(', ')
   }, [rowColumns])
 
+  const paginatedUsers = useMemo(() => {
+    const start = (usersPage - 1) * USERS_PER_PAGE
+    return users.slice(start, start + USERS_PER_PAGE)
+  }, [users, usersPage])
+
+  const totalUsersPages = Math.max(1, Math.ceil(users.length / USERS_PER_PAGE))
+
   if (checkingAccess) {
     return (
       <div className="flex items-center justify-center py-24">
@@ -379,21 +395,8 @@ export default function AdminPage() {
     <div>
       <PageHeader title="Admin" description="Gerenciamento direto do banco de dados" />
 
-      <div className="flex items-center gap-2 mb-8 border-b border-[var(--gray-200)] overflow-x-auto">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            className={`flex items-center gap-2 px-4 py-3 text-size-body-small font-medium border-b-2 -mb-px transition-colors cursor-pointer whitespace-nowrap ${
-              tab === t.id
-                ? 'border-[var(--color-primary-600)] text-[var(--color-primary-700)]'
-                : 'border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
-            }`}
-          >
-            {t.icon}
-            {t.label}
-          </button>
-        ))}
+      <div className="mb-8">
+        <Tabs tabs={TABS} activeTab={tab} onChange={(id) => setTab(id as TabId)} />
       </div>
 
       {tab === 'overview' && (
@@ -453,7 +456,7 @@ export default function AdminPage() {
                       </td>
                     </tr>
                   ) : (
-                    users.map((u) => (
+                    paginatedUsers.map((u) => (
                       <tr key={u.id} className="border-t border-[var(--gray-100)] hover:bg-[var(--gray-50)]">
                         <td className="px-4 py-3 text-size-body-small font-medium text-[var(--gray-800)]">{u.name}</td>
                         <td className="px-4 py-3 text-size-body-small text-[var(--gray-600)]">{u.email}</td>
@@ -479,6 +482,15 @@ export default function AdminPage() {
               </table>
             </div>
           </Card>
+          {users.length > USERS_PER_PAGE && (
+            <div className="mt-4">
+              <Pagination
+                currentPage={usersPage}
+                totalPages={totalUsersPages}
+                onPageChange={setUsersPage}
+              />
+            </div>
+          )}
         </div>
       )}
 

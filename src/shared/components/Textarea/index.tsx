@@ -21,9 +21,9 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             border bg-[var(--color-bg-input)] text-size-body-small text-[var(--gray-900)]
             placeholder:text-[var(--gray-400)] resize-y
             transition-colors duration-[var(--duration-fast)]
-            focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-900)] focus:ring-offset-0
+            focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)] focus:ring-offset-0
             disabled:bg-[var(--gray-100)] disabled:text-[var(--gray-400)] disabled:cursor-not-allowed
-            ${error ? 'border-[var(--color-danger-600)]' : 'border-[var(--gray-300)]'}
+            ${error ? 'border-[var(--color-danger)]' : 'border-[var(--gray-300)]'}
             ${className}
           `}
           aria-invalid={!!error}
@@ -31,7 +31,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
           {...props}
         />
         {error && (
-          <p id={`${textareaId}-error`} className="text-size-caption text-[var(--color-danger-600)]" role="alert">
+          <p id={`${textareaId}-error`} className="text-size-caption text-[var(--color-danger)]" role="alert">
             {error}
           </p>
         )}

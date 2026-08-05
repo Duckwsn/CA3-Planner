@@ -153,6 +153,7 @@
   --gray-900: #111827;
 
   --color-bg-page: #F7F8FC;
+  --color-bg-subtle: #F7F8FB;
   --color-bg-surface: #FFFFFF;
   --color-bg-card: #FFFFFF;
   --color-bg-modal: #FFFFFF;
@@ -228,6 +229,15 @@
   --z-modal: 400;
   --z-toast: 500;
   --z-tooltip: 600;
+
+  /* ─── v2 — breakpoints e containers de landing ─── */
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+  --bp-2xl: 1536px;
+  --bp-1100: 1100px;
+  --container-landing: 1400px;
 
   --duration-fast: 150ms;
   --duration-normal: 250ms;

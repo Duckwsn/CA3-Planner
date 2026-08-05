@@ -28,7 +28,7 @@ export function Tooltip({ content, children, position = 'top', className = '' }:
         <div
           className={`
             absolute z-[var(--z-tooltip)] px-2.5 py-1.5 rounded-[var(--radius-md)]
-            bg-[var(--gray-800)] text-white text-size-caption whitespace-nowrap
+            bg-[var(--scale-primary-950)] text-white text-size-caption whitespace-nowrap
             pointer-events-none animate-fade-in
             ${positionClasses[position]}
           `}

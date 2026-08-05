@@ -2,11 +2,11 @@ import { forwardRef } from 'react'
 import type { ButtonProps } from './Button.types'
 
 const variantClasses: Record<string, string> = {
-  primary: 'bg-[var(--color-primary-900)] text-white hover:bg-[var(--color-primary-800)] active:bg-[var(--color-primary-700)] disabled:bg-[var(--gray-300)] disabled:text-[var(--gray-500)]',
-  secondary: 'bg-[var(--color-gold-500)] text-[var(--color-primary-900)] hover:bg-[var(--color-gold-600)] active:bg-[var(--color-gold-700)] disabled:bg-[var(--gray-300)] disabled:text-[var(--gray-500)]',
-  ghost: 'bg-transparent text-[var(--color-primary-900)] hover:bg-[var(--gray-100)] active:bg-[var(--gray-200)] disabled:text-[var(--gray-400)]',
-  danger: 'bg-[var(--color-danger-600)] text-white hover:bg-[var(--color-danger-700)] active:bg-[var(--color-danger-800)] disabled:bg-[var(--gray-300)] disabled:text-[var(--gray-500)]',
-  success: 'bg-[var(--color-success-600)] text-white hover:bg-[var(--color-success-700)] active:bg-[var(--color-success-800)] disabled:bg-[var(--gray-300)] disabled:text-[var(--gray-500)]',
+  primary: 'bg-[var(--scale-primary-950)] text-white hover:bg-[var(--scale-primary-900)] active:bg-[var(--scale-primary-800)] disabled:bg-[var(--gray-300)] disabled:text-[var(--gray-500)]',
+  secondary: 'bg-[var(--color-brand)] text-[var(--color-brand-ink)] hover:bg-[var(--color-brand-hover)] active:bg-[var(--color-brand-bright)] disabled:bg-[var(--gray-300)] disabled:text-[var(--gray-500)]',
+  ghost: 'bg-transparent text-[var(--scale-primary-900)] hover:bg-[var(--gray-100)] active:bg-[var(--gray-200)] disabled:text-[var(--gray-400)]',
+  danger: 'bg-[var(--color-danger)] text-white hover:bg-[var(--color-danger)] hover:opacity-90 active:opacity-80 disabled:bg-[var(--gray-300)] disabled:text-[var(--gray-500)]',
+  success: 'bg-[var(--color-success)] text-white hover:opacity-90 active:opacity-80 disabled:bg-[var(--gray-300)] disabled:text-[var(--gray-500)]',
 }
 
 const sizeClasses: Record<string, string> = {

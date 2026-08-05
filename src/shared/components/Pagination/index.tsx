@@ -35,7 +35,7 @@ export function Pagination({ currentPage, totalPages, onPageChange, className = 
               flex items-center justify-center w-9 h-9 rounded-[var(--radius-md)] text-size-body-small font-medium
               transition-colors cursor-pointer
               ${page === currentPage
-                ? 'bg-[var(--color-primary-900)] text-white'
+                ? 'bg-[var(--scale-primary-950)] text-white'
                 : 'text-[var(--gray-600)] hover:bg-[var(--gray-100)]'
               }
             `}

@@ -14,8 +14,8 @@ export function Radio({ label, className = '', id: externalId, ...props }: Radio
           className="sr-only peer"
           {...props}
         />
-        <div className="w-5 h-5 rounded-[var(--radius-full)] border-2 border-[var(--gray-300)] peer-checked:border-[var(--color-primary-900)] transition-colors duration-[var(--duration-fast)]" />
-        <div className="absolute w-2.5 h-2.5 rounded-[var(--radius-full)] bg-[var(--color-primary-900)] scale-0 peer-checked:scale-100 transition-transform duration-[var(--duration-fast)]" />
+        <div className="w-5 h-5 rounded-[var(--radius-full)] border-2 border-[var(--gray-300)] peer-checked:border-[var(--scale-primary-950)] transition-colors duration-[var(--duration-fast)]" />
+        <div className="absolute w-2.5 h-2.5 rounded-[var(--radius-full)] bg-[var(--scale-primary-950)] scale-0 peer-checked:scale-100 transition-transform duration-[var(--duration-fast)]" />
       </div>
       {label && <span className="text-size-body-small text-[var(--gray-700)] select-none">{label}</span>}
     </label>

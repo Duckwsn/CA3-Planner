@@ -33,6 +33,7 @@
   --color-bg-card: var(--color-bg-card);
   --color-bg-modal: var(--color-bg-modal);
   --color-bg-input: var(--color-bg-input);
+  --color-bg-subtle: var(--color-bg-subtle);
   --color-progress-track: var(--color-progress-track);
   --color-progress-fill: var(--color-progress-fill);
 
@@ -250,6 +251,7 @@
   --color-bg-card: #1A1F3D;
   --color-bg-modal: #1A1F3D;
   --color-bg-input: #232A52;
+  --color-bg-subtle: #232A52;
 
   --color-card-border: #2A3159;
   --color-card-bg: #1A1F3D;
