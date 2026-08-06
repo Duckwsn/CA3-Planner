@@ -127,16 +127,21 @@ export function Sidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto scrollbar-thin">
+        <nav className="flex-1 px-3 py-4 overflow-y-auto scrollbar-thin">
+          {showLabels && (
+            <span className="block px-3 pt-2 pb-2 text-[10.5px] font-bold uppercase tracking-[1.2px] text-[#64748b]">
+              Menu
+            </span>
+          )}
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               onClick={() => setMobileOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] transition-colors duration-[var(--duration-fast)] ${
+                `flex items-center gap-3 px-3 py-[11px] rounded-[9px] transition-colors duration-[var(--duration-fast)] ${
                   isActive
-                    ? 'bg-[var(--color-sidebar-item-active-bg)] text-[var(--color-sidebar-item-active-text)] font-semibold'
+                    ? 'bg-[var(--color-sidebar-item-active-bg)] text-[var(--color-sidebar-item-active-text)] font-bold'
                     : 'text-[var(--color-sidebar-item-inactive)] hover:bg-white/10 hover:text-white'
                 } ${showLabels ? '' : 'justify-center'}`
               }
@@ -146,19 +151,26 @@ export function Sidebar() {
             </NavLink>
           ))}
           {adminAllowed && (
-            <NavLink
-              to="/admin"
-              onClick={() => setMobileOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-[var(--radius-md)] transition-colors duration-[var(--duration-fast)] ${
-                  isActive
-                    ? 'bg-[var(--color-sidebar-item-active-bg)] text-[var(--color-sidebar-item-active-text)] font-semibold'
-                    : 'text-[var(--color-sidebar-item-inactive)] hover:bg-white/10 hover:text-white'
-                } ${showLabels ? '' : 'justify-center'}`
-              }
-            >
-              <Database size={20} className="shrink-0" />
-              {showLabels && <span className="text-size-body-small truncate">Admin</span>}
+            <NavLink to="/admin" onClick={() => setMobileOpen(false)}>
+              {({ isActive }) => (
+                <span
+                  className={`flex items-center gap-3 px-3 py-[11px] rounded-[9px] transition-colors duration-[var(--duration-fast)] ${
+                    isActive
+                      ? 'bg-[var(--color-sidebar-item-active-bg)] text-[var(--color-sidebar-item-active-text)] font-bold'
+                      : 'text-[var(--color-sidebar-item-inactive)] hover:bg-white/10 hover:text-white'
+                  } ${showLabels ? '' : 'justify-center'}`}
+                >
+                  <Database size={20} className="shrink-0" />
+                  {showLabels && (
+                    <>
+                      <span className="text-size-body-small truncate">Admin</span>
+                      <span className={`ml-auto text-[10px] font-bold px-[7px] py-0.5 rounded-full ${isActive ? 'bg-[rgba(15,31,61,.2)] text-[#0f1f3d]' : 'bg-white/15 text-white'}`}>
+                        admin
+                      </span>
+                    </>
+                  )}
+                </span>
+              )}
             </NavLink>
           )}
         </nav>

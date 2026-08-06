@@ -6,7 +6,7 @@ interface ProgressBarProps {
   className?: string
 }
 
-export function ProgressBar({ value, max, color, height = 'h-2', className = '' }: ProgressBarProps) {
+export function ProgressBar({ value, max, color, height = 'h-1.5', className = '' }: ProgressBarProps) {
   const pct = max > 0 ? Math.min((value / max) * 100, 100) : 0
 
   return (

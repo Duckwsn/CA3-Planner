@@ -177,21 +177,15 @@ export default function BoardDetailsPage() {
 
   return (
     <div>
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="sm" iconLeft={<ArrowLeft size={16} />} onClick={() => navigate('/boards')}>
+      <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
+        <Button variant="secondary" size="sm" iconLeft={<ArrowLeft size={16} />} onClick={() => navigate('/boards')}>
           Voltar
         </Button>
-        <div className="flex-1">
-          <h1 className="text-size-h4 font-semibold text-[var(--gray-900)]">{selectedBoard.title}</h1>
-          {selectedBoard.description && (
-            <p className="text-size-body-small text-[var(--gray-500)]">{selectedBoard.description}</p>
-          )}
-        </div>
-        <div className="flex gap-2">
-          <Button variant="ghost" size="sm" iconLeft={<Pencil size={14} />} onClick={() => setEditModalOpen(true)}>
+        <div className="flex gap-2.5">
+          <Button variant="secondary" size="md" iconLeft={<Pencil size={14} />} onClick={() => setEditModalOpen(true)}>
             Editar
           </Button>
-          <Button variant="ghost" size="sm" iconLeft={<Trash2 size={14} />} onClick={() => setDeleteConfirm(true)}>
+          <Button variant="danger" size="md" iconLeft={<Trash2 size={14} />} onClick={() => setDeleteConfirm(true)}>
             Excluir
           </Button>
         </div>
@@ -227,10 +221,15 @@ export default function BoardDetailsPage() {
         </DragDropContext>
       )}
 
-      <div className="mt-4">
-        <Button variant="ghost" size="sm" onClick={() => navigate(`/boards/${id}/archived`)}>
+      <div className="mt-5">
+        <a
+          href={`/boards/${id}/archived`}
+          onClick={(e) => { e.preventDefault(); navigate(`/boards/${id}/archived`) }}
+          className="inline-flex items-center gap-2 text-[13.5px] font-medium text-[var(--muted)] hover:text-[var(--color-text-primary)] transition-colors cursor-pointer"
+        >
+          <Archive size={15} />
           Ver tarefas arquivadas
-        </Button>
+        </a>
       </div>
 
       {/* Create Task Modal */}

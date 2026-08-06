@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Plus, Pencil, Trash2, Users, UserPlus, X } from 'lucide-react'
+import { Plus, Pencil, Trash2, Users, ChevronDown, X } from 'lucide-react'
 import { PageHeader } from '../../shared/components/PageHeader'
 import { Button } from '../../shared/components/Button'
 import { Card } from '../../shared/components/Card'
@@ -62,8 +62,6 @@ export default function TeamsPage() {
   return (
     <div>
       <PageHeader
-        title="Equipes"
-        description="Gerencie as equipes pedagógicas"
         actions={
           <Button variant="primary" size="md" iconLeft={<Plus size={16} />} onClick={openCreate}>
             Nova Equipe
@@ -79,70 +77,55 @@ export default function TeamsPage() {
           action={<Button variant="primary" size="md" iconLeft={<Plus size={16} />} onClick={openCreate}>Criar Equipe</Button>}
         />
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
           {teams.map((team) => (
-            <Card key={team.id} border hover className="group">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-size-h6 font-semibold text-[var(--color-text-primary)] truncate">{team.name}</h3>
-                    {team.members && <span className="text-size-caption text-[var(--color-text-secondary)] shrink-0">{team.members.length} membros</span>}
-                  </div>
-                  {team.description && <p className="text-size-body-small text-[var(--color-text-secondary)] mb-4">{team.description}</p>}
+            <Card key={team.id} border>
+              <div className="flex items-start justify-between gap-2.5 mb-[6px]">
+                <h3 className="text-[16px] font-bold text-[var(--color-text-primary)] truncate">{team.name}</h3>
+                {team.members && <span className="text-[12px] text-[var(--muted-soft)] shrink-0">{team.members.length} membros</span>}
+              </div>
 
-                  {/* Members avatars */}
-                  <div className="flex items-center gap-1 mb-4">
-                    {team.members?.slice(0, 5).map((m) => (
-                      <Avatar key={m.id} name={m.user?.name ?? m.name} size="sm" />
-                    ))}
-                    {team.members && team.members.length > 5 && (
-                      <span className="text-size-caption text-[var(--color-text-secondary)] ml-1">+{team.members.length - 5}</span>
-                    )}
-                    <button
-                      onClick={() => { setMemberOpen(team.id); setExpandedId(team.id) }}
-                      className="ml-2 p-1.5 rounded-[var(--radius-sm)] text-[var(--gray-400)] hover:text-[var(--color-primary-600)] hover:bg-[var(--color-primary-50)] cursor-pointer"
-                      aria-label="Adicionar membro"
-                    >
-                      <UserPlus size={16} />
-                    </button>
-                  </div>
+              {team.description && <p className="text-[13.5px] text-[var(--color-text-secondary)] leading-[1.55] mb-[18px]">{team.description}</p>}
 
-                  {/* Expand members */}
-                  {expandedId === team.id && team.members && team.members.length > 0 && (
-                    <div className="space-y-2 mb-4 p-3 bg-[var(--gray-50)] rounded-[var(--radius-md)]">
-                      {team.members.map((m) => (
-                        <div key={m.id} className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Avatar name={m.user?.name ?? m.name} size="sm" />
-                            <div>
-                              <p className="text-size-body-small font-medium text-[var(--color-text-primary)]">{m.user?.name ?? m.name}</p>
-                              <p className="text-size-caption text-[var(--color-text-secondary)]">{m.user?.role || m.user?.email || m.role || m.email}</p>
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => removeMember(team.id, m.id)}
-                            className="p-1 rounded text-[var(--gray-400)] hover:text-[var(--color-danger-600)] cursor-pointer"
-                            aria-label="Remover membro"
-                          >
-                            <X size={14} />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+              {/* Members avatars */}
+              <div className="flex items-center gap-2 mb-4 flex-wrap">
+                {team.members?.slice(0, 5).map((m) => (
+                  <Avatar key={m.id} name={m.user?.name ?? m.name} size="sm" className="border-2 border-[var(--color-bg-card)]" />
+                ))}
+                {team.members && team.members.length > 5 && (
+                  <span className="w-8 h-8 rounded-full bg-[var(--color-bg-subtle)] text-[var(--muted)] text-[11px] font-semibold flex items-center justify-center border-2 border-[var(--color-bg-card)]">+{team.members.length - 5}</span>
+                )}
+                <button
+                  onClick={() => { setMemberOpen(team.id); setExpandedId(team.id) }}
+                  className="w-8 h-8 rounded-full border-[1.5px] border-dashed border-[var(--muted-soft)] bg-transparent text-[var(--muted-soft)] flex items-center justify-center hover:text-[var(--color-brand-hover)] hover:border-[var(--color-brand)] cursor-pointer transition-colors"
+                  aria-label="Adicionar membro"
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
 
-                <div className="flex items-center gap-1 opacity-0 pointer-events-none transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 group-hover:pointer-events-auto group-focus-within:pointer-events-auto shrink-0 ml-3">
+              {/* team-foot */}
+              <div className="flex items-center justify-between border-t border-[var(--color-card-border)] pt-[14px]">
+                {team.members && team.members.length > 0 && (
+                  <button
+                    onClick={() => setExpandedId(expandedId === team.id ? null : team.id)}
+                    className="bg-transparent border-none p-0 text-[var(--color-info)] text-[13px] font-semibold inline-flex items-center gap-[6px] cursor-pointer"
+                  >
+                    <ChevronDown size={14} />
+                    {expandedId === team.id ? 'Recolher membros' : `Ver ${team.members.length} membros`}
+                  </button>
+                )}
+                <div className="flex items-center gap-[6px] ml-auto">
                   <button
                     onClick={(e) => { e.stopPropagation(); openEdit(team) }}
-                    className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--gray-200)] bg-[var(--color-bg-surface)] text-[var(--gray-500)] hover:text-[var(--color-primary-600)] hover:border-[var(--color-primary-300)] cursor-pointer transition-colors shadow-[var(--shadow-xs)]"
+                    className="w-[30px] h-[30px] rounded-[8px] border border-[var(--color-card-border)] bg-[var(--color-bg-card)] text-[var(--muted)] flex items-center justify-center hover:text-[var(--color-text-primary)] cursor-pointer transition-colors"
                     aria-label="Editar equipe"
                   >
                     <Pencil size={14} />
                   </button>
                   <button
                     onClick={(e) => { e.stopPropagation(); setDeleteConfirm(team.id) }}
-                    className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--gray-200)] bg-[var(--color-bg-surface)] text-[var(--gray-500)] hover:text-[var(--color-danger-600)] hover:border-[var(--color-danger-300)] cursor-pointer transition-colors shadow-[var(--shadow-xs)]"
+                    className="w-[30px] h-[30px] rounded-[8px] border border-[var(--color-card-border)] bg-[var(--color-bg-card)] text-[var(--muted)] flex items-center justify-center hover:text-[var(--color-danger)] hover:border-[var(--color-danger-bg)] hover:bg-[var(--color-danger-bg)] cursor-pointer transition-colors"
                     aria-label="Excluir equipe"
                   >
                     <Trash2 size={14} />
@@ -150,14 +133,26 @@ export default function TeamsPage() {
                 </div>
               </div>
 
-              {/* Expand toggle */}
-              {team.members && team.members.length > 0 && (
-                <button
-                  onClick={() => setExpandedId(expandedId === team.id ? null : team.id)}
-                  className="text-size-caption text-[var(--color-primary-600)] hover:text-[var(--color-primary-700)] cursor-pointer mt-2 font-medium"
-                >
-                  {expandedId === team.id ? 'Recolher membros' : `Ver ${team.members.length} membros`}
-                </button>
+              {/* Expand members */}
+              {expandedId === team.id && team.members && team.members.length > 0 && (
+                <div className="mt-[14px] border-t border-[var(--color-card-border)] pt-3 flex flex-col gap-2.5">
+                  {team.members.map((m) => (
+                    <div key={m.id} className="flex items-center gap-3">
+                      <Avatar name={m.user?.name ?? m.name} size="sm" className="border-2 border-[var(--color-bg-card)]" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13.5px] font-semibold text-[var(--color-text-primary)] truncate">{m.user?.name ?? m.name}</p>
+                        <p className="text-[12px] text-[var(--muted-soft)] truncate">{m.user?.role || m.user?.email || m.role || m.email}</p>
+                      </div>
+                      <button
+                        onClick={() => removeMember(team.id, m.id)}
+                        className="p-1 rounded text-[var(--muted-soft)] hover:text-[var(--color-danger-600)] cursor-pointer"
+                        aria-label="Remover membro"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
             </Card>
           ))}

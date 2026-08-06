@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import { CheckCircle2, ListTodo, Users, BarChart3, FileText } from 'lucide-react'
 import { PageHeader } from '../../shared/components/PageHeader'
+import { Button } from '../../shared/components/Button'
 import { KpiCard } from '../../shared/components/KpiCard'
 import { LoadingState } from '../../shared/components/LoadingState'
-import { ProgressBar, StackedProgressBar } from '../../shared/components/ProgressBar'
+import { ProgressBar } from '../../shared/components/ProgressBar'
 import { Card, CardHeader, CardBody } from '../../shared/components/Card'
 import { useBoardStore } from '../../stores/domain/boardStore'
 import { useTaskStore } from '../../stores/domain/taskStore'
@@ -11,6 +12,20 @@ import { useTeamStore } from '../../stores/domain/teamStore'
 import { useAuthStore } from '../../stores/core/authStore'
 import { getPriorityLabel, COLUMNS } from '../../types/task.types'
 import { exportReport } from '../../services/ReportExporter'
+
+const priorityColors: Record<string, string> = {
+  low: 'var(--muted-soft)',
+  medium: 'var(--color-info)',
+  high: 'var(--color-brand)',
+  urgent: 'var(--color-danger)',
+}
+
+const statusColors: Record<string, string> = {
+  'A Fazer': 'var(--color-info)',
+  'Fazendo': 'var(--color-brand)',
+  'Revisão': 'var(--color-purple)',
+  'Concluído': 'var(--color-success)',
+}
 
 export default function ReportsPage() {
   const [exporting, setExporting] = useState(false)
@@ -72,42 +87,35 @@ export default function ReportsPage() {
   return (
     <div>
       <PageHeader
-        title="Relatórios"
-        description="Indicadores e métricas do ambiente pedagógico"
         actions={
-          <button
-            onClick={handleExport}
-            disabled={exporting || tasksLoading}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-[var(--radius-md)] text-size-body-small font-semibold text-white bg-[var(--color-primary-600)] hover:bg-[var(--color-primary-700)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-          >
-            <FileText size={16} />
+          <Button variant="secondary" iconLeft={<FileText size={16} />} onClick={handleExport} disabled={exporting || tasksLoading}>
             {exporting ? 'Gerando...' : 'Exportar PDF'}
-          </button>
+          </Button>
         }
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        <KpiCard icon={<BarChart3 size={20} />} title="Total de Quadros" value={boards.length} />
-        <KpiCard icon={<ListTodo size={20} />} title="Total de Tarefas" value={metrics.total} />
-        <KpiCard icon={<CheckCircle2 size={20} />} title="Concluídas" value={`${metrics.completionRate}%`} variation={`${metrics.done}/${metrics.total}`} variationType="positive" />
-        <KpiCard icon={<Users size={20} />} title="Membros" value={teams.reduce((acc, t) => acc + (t.members?.length ?? 0), 0)} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+        <KpiCard icon={<BarChart3 size={20} />} title="Total de Quadros" value={boards.length} tone="blue" />
+        <KpiCard icon={<ListTodo size={20} />} title="Total de Tarefas" value={metrics.total} tone="indigo" />
+        <KpiCard icon={<CheckCircle2 size={20} />} title="Concluídas" value={`${metrics.completionRate}%`} variation={`${metrics.done}/${metrics.total}`} variationType="positive" tone="green" />
+        <KpiCard icon={<Users size={20} />} title="Membros" value={teams.reduce((acc, t) => acc + (t.members?.length ?? 0), 0)} tone="amber" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Priority Distribution */}
         <Card border>
-          <CardHeader><h3 className="text-size-h6 font-semibold text-[var(--color-text-primary)]">Distribuição por Prioridade</h3></CardHeader>
+          <CardHeader className="mb-5"><h3 className="text-[16px] font-bold text-[var(--color-text-primary)]">Distribuição por Prioridade</h3></CardHeader>
           <CardBody>
-            <div className="space-y-3">
+            <div>
               {Object.entries(priorityDist).map(([key, count]) => {
                 const max = Math.max(...Object.values(priorityDist), 1)
                 return (
-                  <div key={key}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-size-body-small text-[var(--color-text-secondary)]">{getPriorityLabel(key as any)}</span>
-                      <span className="text-size-body-small font-medium text-[var(--color-text-primary)]">{count}</span>
+                  <div key={key} className="flex items-center gap-3 mb-[18px]">
+                    <span className="flex-1 text-[13.5px] font-medium text-[var(--color-text-primary)]">{getPriorityLabel(key as any)}</span>
+                    <span className="text-[12.5px] text-[var(--muted-soft)] tabular-nums">{count}</span>
+                    <div className="flex-[2]">
+                      <ProgressBar value={count} max={max} color={priorityColors[key]} />
                     </div>
-                    <ProgressBar value={count} max={max} color="var(--color-primary-500)" />
                   </div>
                 )
               })}
@@ -117,16 +125,16 @@ export default function ReportsPage() {
 
         {/* Status Distribution */}
         <Card border>
-          <CardHeader><h3 className="text-size-h6 font-semibold text-[var(--color-text-primary)]">Distribuição por Status</h3></CardHeader>
+          <CardHeader className="mb-5"><h3 className="text-[16px] font-bold text-[var(--color-text-primary)]">Distribuição por Status</h3></CardHeader>
           <CardBody>
-            <div className="space-y-3">
+            <div>
               {statusDist.map((s) => (
-                <div key={s.label}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-size-body-small text-[var(--color-text-secondary)]">{s.label}</span>
-                    <span className="text-size-body-small font-medium text-[var(--color-text-primary)]">{s.count}</span>
+                <div key={s.label} className="flex items-center gap-3 mb-[18px]">
+                  <span className="flex-1 text-[13.5px] font-medium text-[var(--color-text-primary)]">{s.label}</span>
+                  <span className="text-[12.5px] text-[var(--muted-soft)] tabular-nums">{s.count}</span>
+                  <div className="flex-[2]">
+                    <ProgressBar value={s.count} max={Math.max(...statusDist.map((x) => x.count), 1)} color={statusColors[s.label]} />
                   </div>
-                  <ProgressBar value={s.count} max={Math.max(...statusDist.map((x) => x.count), 1)} color="var(--color-info-500)" />
                 </div>
               ))}
             </div>
@@ -136,25 +144,19 @@ export default function ReportsPage() {
 
       {/* Tasks per Assignee */}
       <Card border>
-        <CardHeader><h3 className="text-size-h6 font-semibold text-[var(--color-text-primary)]">Tarefas por Responsável</h3></CardHeader>
+        <CardHeader className="mb-5"><h3 className="text-[16px] font-bold text-[var(--color-text-primary)]">Tarefas por Responsável</h3></CardHeader>
         <CardBody>
           {assigneeDist.length === 0 ? (
-            <p className="text-size-body-small text-[var(--text-muted,var(--gray-400))] text-center py-4">Nenhuma tarefa encontrada</p>
+            <p className="text-[13.5px] text-[var(--muted-soft)] text-center py-4">Nenhuma tarefa encontrada</p>
           ) : (
-            <div className="space-y-4">
+            <div>
               {assigneeDist.map(([name, data]) => (
-                <div key={name}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-size-body-small text-[var(--color-text-secondary)]">{name}</span>
-                    <span className="text-size-body-small font-medium text-[var(--color-text-primary)]">{data.done}/{data.total} concluídas</span>
+                <div key={name} className="flex items-center gap-3 mb-[18px]">
+                  <span className="flex-1 text-[13.5px] font-medium text-[var(--color-text-primary)] truncate">{name}</span>
+                  <span className="text-[12.5px] text-[var(--muted-soft)] tabular-nums">{data.done}/{data.total} concluídas</span>
+                  <div className="flex-[2]">
+                    <ProgressBar value={data.done} max={data.total} color="var(--color-success)" />
                   </div>
-                  <StackedProgressBar
-                    height="h-3"
-                    segments={[
-                      { value: data.done, color: 'var(--color-success-500)' },
-                      { value: data.total - data.done, color: 'var(--gray-300)' },
-                    ]}
-                  />
                 </div>
               ))}
             </div>

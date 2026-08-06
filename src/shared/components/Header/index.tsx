@@ -1,13 +1,26 @@
 import { LogOut, Menu } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { Avatar } from '../Avatar'
 import { NotificationsDropdown } from './NotificationsDropdown'
 import { useAuthStore } from '../../../stores/core/authStore'
 import { useUserStore } from '../../../stores/domain/userStore'
+import { useBoardStore } from '../../../stores/domain/boardStore'
 import { useUIStore } from '../../../stores/core/uiStore'
 import { loadProfile, type ProfileData } from '../../../utils/profile'
 import { getCurrentUserId } from '../../../utils/userPrefs'
+
+const ROUTE_TITLES: { pattern: RegExp; title: string; subtitle: string; dynamic?: boolean }[] = [
+  { pattern: /^\/dashboard$/, title: 'Dashboard', subtitle: 'Visão executiva do ambiente pedagógico' },
+  { pattern: /^\/boards$/, title: 'Quadros', subtitle: 'Gerencie seus quadros pedagógicos' },
+  { pattern: /\/archived$/, title: 'Tarefas Arquivadas', subtitle: 'Histórico de tarefas concluídas e arquivadas' },
+  { pattern: /^\/boards\/.+/, title: 'Quadro', subtitle: '', dynamic: true },
+  { pattern: /^\/calendar$/, title: 'Calendário', subtitle: 'Visualização mensal das atividades' },
+  { pattern: /^\/teams$/, title: 'Equipes', subtitle: 'Gerencie as equipes pedagógicas' },
+  { pattern: /^\/reports$/, title: 'Relatórios', subtitle: 'Indicadores e métricas do ambiente pedagógico' },
+  { pattern: /^\/settings$/, title: 'Configurações', subtitle: 'Preferências do sistema' },
+  { pattern: /^\/admin$/, title: 'Admin', subtitle: 'Gerenciamento direto do banco de dados' },
+]
 
 export function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false)
@@ -29,6 +42,16 @@ export function Header() {
   const setMobileOpen = useUIStore((s) => s.setMobileOpen)
   const displayName = profile?.name || user?.name || 'Usuário'
   const displayEmail = user?.email ?? ''
+  const location = useLocation()
+  const selectedBoard = useBoardStore((s) => s.selectedBoard)
+
+  const routeMeta = ROUTE_TITLES.find((r) => r.pattern.test(location.pathname))
+  let title = routeMeta?.title ?? 'CA3 Planner'
+  let subtitle = routeMeta?.subtitle ?? ''
+  if (routeMeta?.dynamic) {
+    title = selectedBoard?.title || title
+    subtitle = selectedBoard?.description || subtitle
+  }
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -47,15 +70,24 @@ export function Header() {
 
   return (
     <header className="h-16 bg-[var(--color-bg-surface)] border-b border-[var(--color-topbar-border)] flex items-center justify-between px-6 shrink-0">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 min-w-0">
         <button
           onClick={() => setMobileOpen(true)}
-          className="lg:hidden p-2 rounded-[var(--radius-md)] text-[var(--gray-500)] hover:bg-[var(--gray-100)] cursor-pointer"
+          className="lg:hidden p-2 rounded-[var(--radius-md)] text-[var(--gray-500)] hover:bg-[var(--gray-100)] cursor-pointer shrink-0"
         >
           <Menu size={20} />
         </button>
 
-
+        <div className="flex flex-col min-w-0">
+          <span className="text-[22px] font-extrabold leading-tight tracking-[-0.4px] truncate text-[var(--color-text-primary)]">
+            {title}
+          </span>
+          {subtitle && (
+            <span className="text-[13px] text-[var(--color-text-secondary)] truncate hidden md:block">
+              {subtitle}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center gap-3">

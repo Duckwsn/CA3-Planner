@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { PageHeader } from '../../shared/components/PageHeader'
 import { Card } from '../../shared/components/Card'
 import { LoadingState } from '../../shared/components/LoadingState'
 import { Badge } from '../../shared/components/Badge'
@@ -13,7 +12,7 @@ const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
 
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date())
   const tasks = useTaskStore((s) => s.tasks)
   const tasksLoading = useTaskStore((s) => s.loading)
   const loadAllTasks = useTaskStore((s) => s.loadAllTasks)
@@ -29,6 +28,7 @@ export default function CalendarPage() {
     const startPad = firstDay.getDay()
     const days: (number | null)[] = Array(startPad).fill(null)
     for (let d = 1; d <= lastDay.getDate(); d++) days.push(d)
+    while (days.length % 7 !== 0) days.push(null)
     return days
   }, [year, month])
 
@@ -43,86 +43,81 @@ export default function CalendarPage() {
 
   return (
     <div>
-      <PageHeader title="Calendário" description="Visualização mensal das atividades" />
-
-      <Card border>
-        <div className="flex items-center justify-between mb-6">
-          <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))} className="p-2 rounded-[var(--radius-md)] hover:bg-[var(--gray-100)] cursor-pointer transition-colors">
-            <ChevronLeft size={20} className="text-[var(--color-text-secondary)]" />
-          </button>
-          <h2 className="text-size-h5 font-semibold text-[var(--color-text-primary)]">
-            {monthNames[month]} {year}
-          </h2>
-          <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))} className="p-2 rounded-[var(--radius-md)] hover:bg-[var(--gray-100)] cursor-pointer transition-colors">
-            <ChevronRight size={20} className="text-[var(--color-text-secondary)]" />
-          </button>
-        </div>
-
-        <div className="grid grid-cols-7 mb-2">
-          {weekDays.map((d) => (
-            <div key={d} className="text-center text-size-caption font-semibold text-[var(--color-text-secondary)] py-2 uppercase tracking-wider">{d}</div>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-7 border-t border-l border-[var(--gray-200)]">
-          {calendarDays.map((day, i) => {
-            if (day === null) return <div key={`empty-${i}`} className="min-h-[110px] p-2 border-r border-b border-[var(--gray-200)] bg-[var(--gray-50)]" />
-            const today = new Date()
-            const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear()
-            const isSelected = selectedDate?.getDate() === day && selectedDate?.getMonth() === month
-            const dayTasks = getTasksForDate(day)
-
-            return (
-              <button
-                key={day}
-                onClick={() => setSelectedDate(new Date(year, month, day))}
-                className={`
-                  min-h-[110px] p-2 border-r border-b border-[var(--gray-200)] text-left
-                  hover:bg-[var(--color-primary-50)] transition-colors cursor-pointer
-                  ${isToday ? 'bg-[var(--color-gold-50)]' : ''}
-                  ${isSelected ? 'ring-2 ring-[var(--color-primary-600)] ring-inset' : ''}
-                `}
-              >
-                <span className={`
-                  inline-flex items-center justify-center w-7 h-7 rounded-[var(--radius-full)] text-size-caption mb-1 font-medium
-                  ${isToday ? 'bg-[var(--color-gold-500)] text-white font-bold' : 'text-[var(--color-text-primary)]'}
-                `}>
-                  {day}
-                </span>
-                <div className="space-y-1">
-                  {dayTasks.slice(0, 3).map((t) => (
-                    <div key={t.id} className="flex items-center gap-1">
-                      <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${t.status === 'done' ? 'bg-[var(--color-success-500)]' : 'bg-[var(--color-primary-500)]'}`} />
-                      <span className="text-[10px] text-[var(--color-text-primary)] truncate leading-tight">{t.title}</span>
-                    </div>
-                  ))}
-                  {dayTasks.length > 3 && (
-                    <span className="text-[10px] text-[var(--color-text-secondary)] font-medium">+{dayTasks.length - 3} mais</span>
-                  )}
-                </div>
-              </button>
-            )
-          })}
-        </div>
-      </Card>
-
-      {/* Selected day tasks */}
-      {selectedDate && (
-        <Card border className="mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-size-h6 font-semibold text-[var(--color-text-primary)]">
-              Tarefas - {formatDate(selectedDate)}
-            </h3>
+      <div className="grid grid-cols-1 lg:grid-cols-[1.6fr_1fr] gap-6 items-start">
+        <Card border padding="none" className="overflow-hidden">
+          <div className="flex items-center justify-between px-[18px] py-[14px] border-b border-[var(--color-card-border)]">
+            <button onClick={() => setCurrentDate(new Date(year, month - 1, 1))} className="w-[30px] h-[30px] rounded-[8px] border border-[var(--color-card-border)] bg-[var(--color-bg-card)] text-[var(--muted)] flex items-center justify-center hover:bg-[var(--color-bg-subtle)] cursor-pointer transition-colors" aria-label="Mês anterior">
+              <ChevronLeft size={16} />
+            </button>
+            <h2 className="text-[16px] font-bold text-[var(--color-text-primary)]">
+              {monthNames[month]} {year}
+            </h2>
+            <button onClick={() => setCurrentDate(new Date(year, month + 1, 1))} className="w-[30px] h-[30px] rounded-[8px] border border-[var(--color-card-border)] bg-[var(--color-bg-card)] text-[var(--muted)] flex items-center justify-center hover:bg-[var(--color-bg-subtle)] cursor-pointer transition-colors" aria-label="Próximo mês">
+              <ChevronRight size={16} />
+            </button>
           </div>
+
+          <div className="grid grid-cols-7 border-b border-[var(--color-card-border)]">
+            {weekDays.map((d) => (
+              <div key={d} className="py-2 text-center text-[11px] font-bold uppercase tracking-[0.6px] text-[var(--muted-soft)]">{d}</div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-7">
+            {calendarDays.map((day, i) => {
+              if (day === null) return <div key={`empty-${i}`} className="min-h-[84px] max-sm:min-h-[64px] p-1.5 border-r border-b border-[var(--color-card-border)] bg-[var(--color-bg-subtle)] [&:nth-child(7n)]:border-r-0" />
+              const today = new Date()
+              const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear()
+              const isSelected = selectedDate?.getDate() === day && selectedDate?.getMonth() === month
+              const dayTasks = getTasksForDate(day)
+
+              return (
+                <button
+                  key={day}
+                  onClick={() => setSelectedDate(new Date(year, month, day))}
+                  className={`
+                    min-h-[84px] max-sm:min-h-[64px] p-1.5 border-r border-b border-[var(--color-card-border)] text-left
+                    [&:nth-child(7n)]:border-r-0 hover:bg-[var(--color-bg-subtle)] transition-colors cursor-pointer
+                    ${isSelected ? 'outline-2 outline-[var(--color-info)] outline-offset-[-2px]' : ''}
+                  `}
+                >
+                  <span className={`
+                    inline-flex items-center justify-center w-[22px] h-[22px] rounded-full text-[12px] mb-[3px] tabular-nums
+                    ${isToday ? 'bg-[var(--color-gold-500)] text-[var(--color-brand-ink)] font-bold' : 'text-[var(--muted-soft)] font-semibold'}
+                  `}>
+                    {day}
+                  </span>
+                  <div className="space-y-[2px]">
+                    {dayTasks.slice(0, 3).map((t) => (
+                      <div key={t.id} className="flex items-center gap-[5px]">
+                        <div className={`w-[6px] h-[6px] rounded-full shrink-0 ${t.status === 'done' ? 'bg-[var(--color-success-500)]' : 'bg-[var(--color-primary-500)]'}`} />
+                        <span className="text-[11px] text-[var(--color-text-primary)] truncate leading-tight">{t.title}</span>
+                      </div>
+                    ))}
+                    {dayTasks.length > 3 && (
+                      <span className="text-[10.5px] text-[var(--muted-soft)]">+{dayTasks.length - 3} mais</span>
+                    )}
+                  </div>
+                </button>
+              )
+            })}
+          </div>
+        </Card>
+
+        {/* Selected day tasks */}
+        <Card border className="lg:sticky lg:top-6">
+          <h3 className="text-[15px] font-bold text-[var(--color-text-primary)] mb-[14px]">
+            Tarefas - {selectedDate ? formatDate(selectedDate) : 'Hoje'}
+          </h3>
           {selectedTasks.length === 0 ? (
-            <p className="text-size-body-small text-[var(--gray-400)]">Nenhuma tarefa para esta data</p>
+            <p className="text-[13.5px] text-[var(--muted-soft)]">Nenhuma tarefa para esta data</p>
           ) : (
-            <div className="space-y-2">
+            <div>
               {selectedTasks.map((task) => (
-                <div key={task.id} className="flex items-center justify-between py-2 px-3 rounded-[var(--radius-md)] bg-[var(--gray-50)]">
-                  <div>
-                    <p className="text-size-body-small font-medium text-[var(--color-text-primary)]">{task.title}</p>
-                    <p className="text-size-caption text-[var(--color-text-secondary)]">{task.assignee || 'Sem responsável'}</p>
+                <div key={task.id} className="flex items-center justify-between gap-3 py-[14px] border-b border-[var(--color-card-border)] last:border-b-0">
+                  <div className="flex flex-col gap-[3px] min-w-0">
+                    <span className="text-[14px] font-semibold text-[var(--color-text-primary)] truncate">{task.title}</span>
+                    <span className="text-[12px] text-[var(--muted-soft)]">{task.assignee || 'Sem responsável'}</span>
                   </div>
                   <Badge variant={getPriorityVariant(task.priority)}>{getPriorityLabel(task.priority)}</Badge>
                 </div>
@@ -130,7 +125,7 @@ export default function CalendarPage() {
             </div>
           )}
         </Card>
-      )}
+      </div>
     </div>
   )
 }

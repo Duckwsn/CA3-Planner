@@ -63,8 +63,6 @@ export default function BoardsPage() {
   return (
     <div>
       <PageHeader
-        title="Quadros"
-        description="Gerencie seus quadros pedagógicos"
         actions={
           <Button variant="primary" size="md" iconLeft={<Plus size={16} />} onClick={openCreate}>
             Novo Board
@@ -80,29 +78,29 @@ export default function BoardsPage() {
           action={<Button variant="primary" size="md" iconLeft={<Plus size={16} />} onClick={openCreate}>Criar Primeiro Quadro</Button>}
         />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {boards.map((board) => (
             <Card key={board.id} padding="none" hover border className="overflow-hidden group">
-              <div className="h-1.5" style={{ backgroundColor: board.color }} />
-              <div className="p-5">
-                <div className="flex items-start justify-between mb-2">
+              <div className="h-[5px]" style={{ backgroundColor: board.color }} />
+              <div className="px-6 py-[22px]">
+                <div className="flex items-start justify-between gap-2.5 mb-2">
                   <h3
-                    className="text-size-h6 font-semibold text-[var(--color-text-primary)] cursor-pointer truncate flex-1"
+                    className="text-[17px] font-bold text-[var(--color-text-primary)] cursor-pointer truncate flex-1"
                     onClick={() => navigate(`/boards/${board.id}`)}
                   >
                     {board.title}
                   </h3>
-                  <div className="flex items-center gap-1 opacity-0 pointer-events-none transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 group-hover:pointer-events-auto group-focus-within:pointer-events-auto shrink-0 ml-2">
+                  <div className="flex items-center gap-1.5 opacity-0 pointer-events-none transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 group-hover:pointer-events-auto group-focus-within:pointer-events-auto shrink-0 ml-2">
                     <button
                       onClick={(e) => { e.stopPropagation(); openEdit(board) }}
-                      className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--gray-200)] bg-[var(--color-bg-surface)] text-[var(--gray-500)] hover:text-[var(--color-primary-600)] hover:border-[var(--color-primary-300)] cursor-pointer transition-colors shadow-[var(--shadow-xs)]"
+                      className="w-[30px] h-[30px] flex items-center justify-center rounded-[8px] border border-[var(--color-card-border)] bg-[var(--color-bg-surface)] text-[var(--muted)] hover:text-[var(--color-text-primary)] cursor-pointer transition-colors"
                       aria-label="Editar board"
                     >
                       <Pencil size={14} />
                     </button>
                     <button
                       onClick={(e) => { e.stopPropagation(); setDeleteConfirm(board.id) }}
-                      className="w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--gray-200)] bg-[var(--color-bg-surface)] text-[var(--gray-500)] hover:text-[var(--color-danger-600)] hover:border-[var(--color-danger-300)] cursor-pointer transition-colors shadow-[var(--shadow-xs)]"
+                      className="w-[30px] h-[30px] flex items-center justify-center rounded-[8px] border border-[var(--color-card-border)] bg-[var(--color-bg-surface)] text-[var(--muted)] hover:text-[var(--color-danger)] hover:border-[var(--color-danger-bg)] hover:bg-[var(--color-danger-bg)] cursor-pointer transition-colors"
                       aria-label="Excluir board"
                     >
                       <Trash2 size={14} />
@@ -110,10 +108,10 @@ export default function BoardsPage() {
                   </div>
                 </div>
                 {board.description && (
-                  <p className="text-size-body-small text-[var(--color-text-secondary)] mb-3 line-clamp-2">{board.description}</p>
+                  <p className="text-[13.5px] leading-[1.55] text-[var(--color-text-secondary)] mb-[18px] line-clamp-2">{board.description}</p>
                 )}
-                <div className="flex items-center gap-2 text-size-caption text-[var(--gray-400)]">
-                  <span>{board._count?.tasks ?? 0} tarefas</span>
+                <div className="flex items-center justify-between">
+                  <span className="text-[13px] font-semibold text-[var(--muted)] tabular-nums">{board._count?.tasks ?? 0} tarefas</span>
                 </div>
               </div>
             </Card>

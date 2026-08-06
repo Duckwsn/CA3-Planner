@@ -1,8 +1,7 @@
 import { useState } from 'react'
-import { Eye, EyeOff, Check } from 'lucide-react'
+import { Eye, EyeOff, ChevronDown } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useRegisterController } from './RegisterController'
-
 
 interface FieldError {
   name?: string
@@ -40,10 +39,10 @@ export default function RegisterPage() {
 
   function inputClass(field: keyof FieldError) {
     const hasError = !!errors[field]
-    return `w-full h-[44px] px-[14px] rounded-[8px] border bg-white text-[14px] text-[var(--color-text-primary)] placeholder:text-[#9CA3AF] outline-none transition-all ${
+    return `w-full px-[14px] py-[11px] rounded-[10px] border bg-[var(--color-bg-surface)] text-[14.5px] text-[var(--color-text-primary)] placeholder:text-[var(--muted-soft)] outline-none transition-all ${
       hasError
-        ? 'border-[#D6336C]'
-        : 'border-[#E5E7EB] focus:border-[#4F5FE0] focus:shadow-[0_0_0_3px_rgba(79,95,224,0.15)]'
+        ? 'border-[var(--color-danger)]'
+        : 'border-[var(--color-card-border)] focus:border-[var(--color-focus-ring)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-focus-ring)_18%,transparent)]'
     }`
   }
 
@@ -66,31 +65,32 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-page)] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[var(--color-bg-page)] flex items-center justify-center p-[48px_20px]">
       <div className="w-full max-w-[420px]">
-        <div className="bg-white rounded-[16px] p-[40px_32px] shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
-          {/* Logo */}
-          <div className="flex flex-col items-center mb-6">
-            <div className="w-[72px] h-[72px] rounded-[16px] bg-[var(--color-brand)] flex items-center justify-center mb-3">
-              <span className="text-[#1B2452] font-extrabold text-[22px] leading-none">CA3</span>
+        <div className="w-full max-w-[420px] bg-[var(--color-bg-surface)] border border-[var(--color-card-border)] rounded-[16px] shadow-[var(--shadow-md)] p-[40px_36px]">
+          <div className="flex flex-col items-center gap-3 mb-7">
+            <div className="w-[72px] h-[72px] rounded-[14px] bg-[var(--color-brand)] flex items-center justify-center">
+              <span className="text-[var(--color-brand-ink)] font-extrabold text-[20px] leading-none">CA3</span>
             </div>
-            <h1 className="text-[20px] font-bold text-[var(--color-text-primary)]">CA3 Planner</h1>
-            <p className="text-[13px] text-[#6B7280] mt-0.5">Pedagógico</p>
+            <div className="text-center">
+              <h1 className="text-[22px] font-extrabold text-[var(--color-text-primary)] leading-tight">CA3 Planner</h1>
+              <p className="text-[12.5px] text-[var(--muted-soft)] mt-0.5">Pedagógico</p>
+            </div>
           </div>
 
-          <h2 className="text-[22px] font-bold text-[var(--color-text-primary)] mb-5">Criar conta</h2>
+          <h2 className="text-[20px] font-bold text-[var(--color-text-primary)] mb-5">Criar conta</h2>
 
           <form onSubmit={onSubmit}>
             {serverError && (
-              <div className="p-3 rounded-[8px] bg-[#FEE2E2] text-[13px] text-[#D6336C] mb-4">
+              <div className="p-3 rounded-[10px] bg-[var(--color-danger-bg)] text-[13px] text-[var(--color-danger)] mb-4">
                 {serverError}
               </div>
             )}
 
-            {/* Nome completo */}
-            <div style={{ marginBottom: '16px' }}>
-              <label className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">Nome completo</label>
+            <div className="mb-4">
+              <label htmlFor="reg-name" className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">Nome completo</label>
               <input
+                id="reg-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -98,46 +98,44 @@ export default function RegisterPage() {
                 className={inputClass('name')}
                 autoFocus
               />
-              {errors.name && <p className="text-[12px] text-[#D6336C] mt-1">{errors.name}</p>}
+              {errors.name && <p className="text-[12px] text-[var(--color-danger)] mt-1">{errors.name}</p>}
             </div>
 
-            {/* E-mail */}
-            <div style={{ marginBottom: '16px' }}>
-              <label className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">E-mail</label>
+            <div className="mb-4">
+              <label htmlFor="reg-email" className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">E-mail</label>
               <input
+                id="reg-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="seu@email.com"
                 className={inputClass('email')}
               />
-              {errors.email && <p className="text-[12px] text-[#D6336C] mt-1">{errors.email}</p>}
+              {errors.email && <p className="text-[12px] text-[var(--color-danger)] mt-1">{errors.email}</p>}
             </div>
 
-            {/* Função */}
-            <div style={{ marginBottom: '16px' }}>
-              <label className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">Função</label>
+            <div className="mb-4">
+              <label htmlFor="reg-role" className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">Função</label>
               <div className="relative">
                 <select
+                  id="reg-role"
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full h-[44px] px-[14px] pr-10 rounded-[8px] border border-[#E5E7EB] bg-white text-[14px] text-[var(--color-text-primary)] appearance-none cursor-pointer outline-none transition-all focus:border-[#4F5FE0] focus:shadow-[0_0_0_3px_rgba(79,95,224,0.15)]"
+                  className="w-full px-[14px] py-[11px] pr-10 rounded-[10px] border border-[var(--color-card-border)] bg-[var(--color-bg-surface)] text-[14.5px] text-[var(--color-text-primary)] appearance-none cursor-pointer outline-none transition-all focus:border-[var(--color-focus-ring)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-focus-ring)_18%,transparent)]"
                 >
                   <option value="Professor">Professor</option>
                   <option value="Coordenador">Coordenador</option>
                   <option value="Administrador">Administrador</option>
                 </select>
-                <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9CA3AF] pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
+                <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-soft)] pointer-events-none" />
               </div>
             </div>
 
-            {/* Senha */}
-            <div style={{ marginBottom: '16px' }}>
-              <label className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">Senha</label>
+            <div className="mb-4">
+              <label htmlFor="reg-password" className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">Senha</label>
               <div className="relative">
                 <input
+                  id="reg-password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -147,19 +145,20 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#4B5563] cursor-pointer"
+                  aria-label="Mostrar senha"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-soft)] hover:text-[var(--color-text-primary)] cursor-pointer"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              {errors.password && <p className="text-[12px] text-[#D6336C] mt-1">{errors.password}</p>}
+              {errors.password && <p className="text-[12px] text-[var(--color-danger)] mt-1">{errors.password}</p>}
             </div>
 
-            {/* Confirmar senha */}
-            <div style={{ marginBottom: '16px' }}>
-              <label className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">Confirmar senha</label>
+            <div className="mb-4">
+              <label htmlFor="reg-confirm" className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">Confirmar senha</label>
               <div className="relative">
                 <input
+                  id="reg-confirm"
                   type={showConfirmPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -169,49 +168,43 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#4B5563] cursor-pointer"
+                  aria-label="Mostrar senha"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-soft)] hover:text-[var(--color-text-primary)] cursor-pointer"
                 >
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              {errors.confirmPassword && <p className="text-[12px] text-[#D6336C] mt-1">{errors.confirmPassword}</p>}
+              {errors.confirmPassword && <p className="text-[12px] text-[var(--color-danger)] mt-1">{errors.confirmPassword}</p>}
             </div>
 
-            {/* Termos */}
-            <div style={{ marginBottom: '16px' }}>
-              <label className="inline-flex items-center gap-3 cursor-pointer">
-                <div className="relative flex items-center justify-center">
-                  <input
-                    type="checkbox"
-                    checked={termsAccepted}
-                    onChange={(e) => setTermsAccepted(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className={`w-5 h-5 rounded-[4px] border-2 transition-colors duration-150 ${
-                    termsAccepted
-                      ? 'border-[#4F5FE0] bg-[#4F5FE0]'
-                      : errors.terms ? 'border-[#D6336C]' : 'border-[#D1D5DB]'
-                  }`} />
-                  <Check size={14} className="absolute text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none" />
-                </div>
-                <span className="text-[13px] text-[var(--color-text-secondary)] select-none">Li e aceito os termos de uso</span>
-              </label>
-              {errors.terms && <p className="text-[12px] text-[#D6336C] mt-1">{errors.terms}</p>}
+            <div className="mb-4">
+              <div className="flex items-start gap-[10px]">
+                <input
+                  id="reg-terms"
+                  type="checkbox"
+                  checked={termsAccepted}
+                  onChange={(e) => setTermsAccepted(e.target.checked)}
+                  className="mt-[2px] w-4 h-4 accent-[var(--color-brand)] cursor-pointer"
+                />
+                <label htmlFor="reg-terms" className="text-[13.5px] text-[var(--muted)] select-none cursor-pointer">
+                  Li e aceito os termos de uso
+                </label>
+              </div>
+              {errors.terms && <p className="text-[12px] text-[var(--color-danger)] mt-1">{errors.terms}</p>}
             </div>
 
-            {/* Botão */}
             <button
               type="submit"
               disabled={!termsAccepted || loading}
-              className="w-full h-[46px] rounded-[8px] font-bold text-[#1B2452] bg-[var(--color-brand)] hover:bg-[var(--color-brand-hover)] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-[12px] rounded-[10px] bg-[var(--color-brand)] text-[var(--color-brand-ink)] text-[15px] font-bold mt-2 hover:bg-[var(--color-brand-bright)] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Criando conta...' : 'Criar conta'}
             </button>
           </form>
 
-          <p className="text-[13px] text-[#6B7280] text-center mt-6">
+          <p className="text-[14px] text-[var(--muted)] text-center mt-5">
             Já tem uma conta?{' '}
-            <Link to="/login" className="text-[#4F5FE0] hover:underline font-medium">
+            <Link to="/login" className="text-[var(--color-info)] font-semibold hover:underline">
               Entrar
             </Link>
           </p>

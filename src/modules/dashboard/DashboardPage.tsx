@@ -1,6 +1,5 @@
 import { useEffect, useMemo } from 'react'
 import { LayoutDashboard, ListTodo, CheckCircle2, AlertTriangle } from 'lucide-react'
-import { PageHeader } from '../../shared/components/PageHeader'
 import { KpiCard } from '../../shared/components/KpiCard'
 import { ErrorState } from '../../shared/components/ErrorState'
 import { LoadingState } from '../../shared/components/LoadingState'
@@ -60,14 +59,12 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <PageHeader title="Dashboard" description="Visão executiva do ambiente pedagógico" />
-
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        <KpiCard icon={<LayoutDashboard size={20} />} title="Quadros Ativos" value={metrics.totalBoards} />
-        <KpiCard icon={<ListTodo size={20} />} title="Tarefas Totais" value={metrics.totalTasks} />
-        <KpiCard icon={<CheckCircle2 size={20} />} title="Concluídas" value={metrics.completedTasks} variation={metrics.totalTasks ? `${Math.round((metrics.completedTasks / metrics.totalTasks) * 100)}%` : '0%'} variationType="positive" />
-        <KpiCard icon={<AlertTriangle size={20} />} title="Em Atraso" value={metrics.overdueTasks} variation={metrics.overdueTasks > 0 ? `${metrics.overdueTasks} pendentes` : '0'} variationType={metrics.overdueTasks > 0 ? 'negative' : 'positive'} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+        <KpiCard tone="blue" icon={<LayoutDashboard size={20} />} title="Quadros Ativos" value={metrics.totalBoards} />
+        <KpiCard tone="indigo" icon={<ListTodo size={20} />} title="Tarefas Totais" value={metrics.totalTasks} />
+        <KpiCard tone="green" icon={<CheckCircle2 size={20} />} title="Concluídas" value={metrics.completedTasks} variation={metrics.totalTasks ? `${Math.round((metrics.completedTasks / metrics.totalTasks) * 100)}%` : '0%'} variationType="positive" />
+        <KpiCard tone="red" icon={<AlertTriangle size={20} />} title="Em Atraso" value={metrics.overdueTasks} variation={metrics.overdueTasks > 0 ? `${metrics.overdueTasks} pendentes` : '0'} variationType={metrics.overdueTasks > 0 ? 'negative' : 'positive'} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

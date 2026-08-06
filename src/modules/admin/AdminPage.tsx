@@ -12,16 +12,16 @@ import {
   ShieldOff,
   RefreshCw,
   AlertTriangle,
+  Terminal,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react'
-import { PageHeader } from '../../shared/components/PageHeader'
 import { Button } from '../../shared/components/Button'
 import { Card } from '../../shared/components/Card'
 import { Modal } from '../../shared/components/Modal'
 import { Input } from '../../shared/components/Input'
 import { Select } from '../../shared/components/Select'
 import { EmptyState } from '../../shared/components/EmptyState'
-import { Tabs } from '../../shared/components/Tabs'
-import { Pagination } from '../../shared/components/Pagination'
 import { AdminService } from '../../services/AdminService'
 import { useUIStore } from '../../stores/core/uiStore'
 import type {
@@ -57,21 +57,42 @@ type DeleteTarget =
 
 const EMPTY_USER_FORM: UserFormState = { name: '', email: '', password: '', role: 'Membro', organizationId: '' }
 
-function StatCard({ label, value, icon }: { label: string; value: number; icon: ReactNode }) {
+function StatCard({ label, value }: { label: string; value: number }) {
   return (
-    <Card border className="p-5">
-      <div className="flex items-center gap-4">
-        <div className="w-11 h-11 rounded-[var(--radius-md)] bg-[var(--color-primary-50)] text-[var(--color-primary-700)] flex items-center justify-center shrink-0">
-          {icon}
-        </div>
-        <div>
-          <p className="text-size-h4 font-bold text-[var(--color-text-primary)]">{value}</p>
-          <p className="text-size-caption text-[var(--color-text-secondary)]">{label}</p>
-        </div>
-      </div>
+    <Card border className="px-[22px] py-5">
+      <p className="text-[30px] font-extrabold leading-none tabular-nums text-[var(--color-text-primary)] mb-[6px]">{value}</p>
+      <p className="text-[12.5px] text-[var(--muted-soft)] font-medium">{label}</p>
     </Card>
   )
 }
+
+function RoleBadge({ role }: { role: string }) {
+  const r = role?.toLowerCase() ?? ''
+  let cls = 'bg-[var(--color-bg-subtle)] text-[var(--muted)]'
+  if (r.includes('admin')) cls = 'bg-[var(--color-purple-bg)] text-[var(--color-purple)]'
+  else if (r.includes('coord')) cls = 'bg-[var(--color-info-bg)] text-[var(--color-info)]'
+  return (
+    <span className={`inline-flex items-center px-[10px] py-[3px] rounded-[var(--radius-full)] text-[11.5px] font-semibold whitespace-nowrap ${cls}`}>
+      {role}
+    </span>
+  )
+}
+
+function buildPages(current: number, total: number): (number | 'dots')[] {
+  const pages: (number | 'dots')[] = []
+  for (let i = 1; i <= total; i++) {
+    if (i === 1 || i === total || (i >= current - 1 && i <= current + 1)) {
+      pages.push(i)
+    } else if (pages[pages.length - 1] !== 'dots') {
+      pages.push('dots')
+    }
+  }
+  return pages
+}
+
+const thClass = 'px-5 py-3 font-bold bg-[var(--color-bg-subtle)]'
+const tdClass = 'px-5 py-[13px] text-[13.5px] border-b border-[var(--color-card-border)]'
+const rowHoverClass = 'hover:bg-[var(--color-bg-subtle)]'
 
 export default function AdminPage() {
   const addToast = useUIStore((s) => s.addToast)
@@ -370,6 +391,9 @@ export default function AdminPage() {
   }, [users, usersPage])
 
   const totalUsersPages = Math.max(1, Math.ceil(users.length / USERS_PER_PAGE))
+  const paginationPages = buildPages(usersPage, totalUsersPages)
+  const firstUserIndex = users.length === 0 ? 0 : (usersPage - 1) * USERS_PER_PAGE + 1
+  const lastUserIndex = Math.min(usersPage * USERS_PER_PAGE, users.length)
 
   if (checkingAccess) {
     return (
@@ -393,10 +417,24 @@ export default function AdminPage() {
 
   return (
     <div>
-      <PageHeader title="Admin" description="Gerenciamento direto do banco de dados" />
-
-      <div className="mb-8">
-        <Tabs tabs={TABS} activeTab={tab} onChange={(id) => setTab(id as TabId)} />
+      <div className="flex gap-1 border-b border-[var(--color-card-border)] mb-6 overflow-x-auto">
+        {TABS.map((t) => {
+          const isActive = tab === t.id
+          return (
+            <button
+              key={t.id}
+              onClick={() => setTab(t.id)}
+              className={`inline-flex items-center gap-2 px-[18px] py-[11px] -mb-px border-b-2 text-[14px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${
+                isActive
+                  ? 'text-[var(--color-brand-hover)] border-[var(--color-brand)]'
+                  : 'text-[var(--muted)] border-transparent hover:text-[var(--color-text-primary)]'
+              }`}
+            >
+              {t.icon}
+              {t.label}
+            </button>
+          )
+        })}
       </div>
 
       {tab === 'overview' && (
@@ -408,15 +446,15 @@ export default function AdminPage() {
               <RefreshCw size={24} className="animate-spin text-[var(--color-text-secondary)]" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatCard label="Usuários" value={stats.User} icon={<Users size={20} />} />
-              <StatCard label="Organizações" value={stats.Organization} icon={<Building2 size={20} />} />
-              <StatCard label="Quadros" value={stats.Board} icon={<Database size={20} />} />
-              <StatCard label="Tarefas" value={stats.Task} icon={<LayoutDashboard size={20} />} />
-              <StatCard label="Equipes" value={stats.Team} icon={<Users size={20} />} />
-              <StatCard label="Membros" value={stats.TeamMember} icon={<Users size={20} />} />
-              <StatCard label="Comentários" value={stats.Comment} icon={<Database size={20} />} />
-              <StatCard label="Notificações" value={stats.Notification} icon={<Database size={20} />} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <StatCard label="Usuários" value={stats.User} />
+              <StatCard label="Organizações" value={stats.Organization} />
+              <StatCard label="Quadros" value={stats.Board} />
+              <StatCard label="Tarefas" value={stats.Task} />
+              <StatCard label="Equipes" value={stats.Team} />
+              <StatCard label="Membros" value={stats.TeamMember} />
+              <StatCard label="Comentários" value={stats.Comment} />
+              <StatCard label="Notificações" value={stats.Notification} />
             </div>
           )}
         </div>
@@ -424,45 +462,47 @@ export default function AdminPage() {
 
       {tab === 'users' && (
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-size-body-small text-[var(--color-text-secondary)]">Criar, editar, excluir e resetar senha de usuários.</p>
-            <Button variant="primary" size="md" iconLeft={<Plus size={16} />} onClick={openCreateUser}>
+          <p className="text-[13px] text-[var(--muted)] mb-[14px]">Criar, editar, excluir e resetar senha de usuários.</p>
+          <div className="flex justify-end mb-[14px]">
+            <Button variant="primary" size="sm" iconLeft={<Plus size={14} />} onClick={openCreateUser}>
               Novo Usuário
             </Button>
           </div>
-          <Card border className="overflow-hidden">
+          <Card border padding="none" className="overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full text-left">
+              <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[var(--gray-50)] text-size-caption text-[var(--gray-500)] uppercase">
-                    <th className="px-4 py-3 font-medium">Nome</th>
-                    <th className="px-4 py-3 font-medium">Email</th>
-                    <th className="px-4 py-3 font-medium">Cargo</th>
-                    <th className="px-4 py-3 font-medium">Organização</th>
-                    <th className="px-4 py-3 font-medium text-right">Ações</th>
+                  <tr className="text-[11px] font-bold uppercase tracking-[0.8px] text-[var(--muted-soft)]">
+                    <th className={`${thClass} text-left`}>Nome</th>
+                    <th className={`${thClass} text-left`}>Email</th>
+                    <th className={`${thClass} text-left`}>Cargo</th>
+                    <th className={`${thClass} text-left`}>Organização</th>
+                    <th className={`${thClass} text-right`}>Ações</th>
                   </tr>
                 </thead>
                 <tbody>
                   {usersLoading ? (
                     <tr>
-                      <td colSpan={5} className="px-4 py-8 text-center text-[var(--gray-400)]">
+                      <td colSpan={5} className="px-5 py-8 text-center text-[var(--muted-soft)]">
                         Carregando...
                       </td>
                     </tr>
                   ) : users.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="px-4 py-8 text-center text-[var(--gray-400)]">
+                      <td colSpan={5} className="px-5 py-8 text-center text-[var(--muted-soft)]">
                         Nenhum usuário encontrado.
                       </td>
                     </tr>
                   ) : (
                     paginatedUsers.map((u) => (
-                      <tr key={u.id} className="border-t border-[var(--gray-100)] hover:bg-[var(--gray-50)]">
-                        <td className="px-4 py-3 text-size-body-small font-medium text-[var(--gray-800)]">{u.name}</td>
-                        <td className="px-4 py-3 text-size-body-small text-[var(--gray-600)]">{u.email}</td>
-                        <td className="px-4 py-3 text-size-body-small text-[var(--gray-600)]">{u.role}</td>
-                        <td className="px-4 py-3 text-size-body-small text-[var(--gray-600)]">{u.organizationName}</td>
-                        <td className="px-4 py-3">
+                      <tr key={u.id} className={rowHoverClass}>
+                        <td className={`${tdClass} font-semibold text-[var(--color-text-primary)]`}>{u.name}</td>
+                        <td className={`${tdClass} text-[var(--color-text-secondary)]`}>{u.email}</td>
+                        <td className={tdClass}>
+                          <RoleBadge role={u.role} />
+                        </td>
+                        <td className={`${tdClass} text-[var(--color-text-secondary)]`}>{u.organizationName}</td>
+                        <td className={tdClass}>
                           <div className="flex items-center justify-end gap-1">
                             <IconButton label="Editar" onClick={() => openEditUser(u)}>
                               <Pencil size={14} />
@@ -481,44 +521,74 @@ export default function AdminPage() {
                 </tbody>
               </table>
             </div>
+            {users.length > USERS_PER_PAGE && (
+              <div className="flex items-center justify-between gap-[10px] flex-wrap px-5 py-[14px] border-t border-[var(--color-card-border)]">
+                <span className="text-[12.5px] text-[var(--muted-soft)]">
+                  Exibindo {firstUserIndex}–{lastUserIndex} de {users.length} usuários
+                </span>
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => setUsersPage(Math.max(1, usersPage - 1))}
+                    disabled={usersPage <= 1}
+                    aria-label="Página anterior"
+                    className={`${pagBtnClass} disabled:opacity-40 disabled:cursor-not-allowed`}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  {paginationPages.map((p, idx) =>
+                    p === 'dots' ? (
+                      <span key={`dots-${idx}`} className="min-w-[32px] h-8 flex items-center justify-center text-[13px] text-[var(--muted-soft)]">
+                        ...
+                      </span>
+                    ) : (
+                      <button
+                        key={p}
+                        onClick={() => setUsersPage(p)}
+                        aria-current={p === usersPage ? 'page' : undefined}
+                        className={`${pagBtnClass} ${p === usersPage ? pagBtnActive : ''}`}
+                      >
+                        {p}
+                      </button>
+                    ),
+                  )}
+                  <button
+                    onClick={() => setUsersPage(Math.min(totalUsersPages, usersPage + 1))}
+                    disabled={usersPage >= totalUsersPages}
+                    aria-label="Próxima página"
+                    className={`${pagBtnClass} disabled:opacity-40 disabled:cursor-not-allowed`}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            )}
           </Card>
-          {users.length > USERS_PER_PAGE && (
-            <div className="mt-4">
-              <Pagination
-                currentPage={usersPage}
-                totalPages={totalUsersPages}
-                onPageChange={setUsersPage}
-              />
-            </div>
-          )}
         </div>
       )}
 
       {tab === 'orgs' && (
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-size-body-small text-[var(--color-text-secondary)]">Organizações que agrupam usuários, quadros e equipes.</p>
-            <Button variant="primary" size="md" iconLeft={<Plus size={16} />} onClick={openCreateOrg}>
+          <p className="text-[13px] text-[var(--muted)] mb-[14px]">Organizações que agrupam usuários, quadros e equipes.</p>
+          <div className="flex justify-end mb-[14px]">
+            <Button variant="primary" size="sm" iconLeft={<Plus size={14} />} onClick={openCreateOrg}>
               Nova Organização
             </Button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
             {orgs.map((o) => (
-              <Card key={o.id} border hover className="p-5">
-                <div className="flex items-start justify-between">
-                  <div className="min-w-0">
-                    <h3 className="text-size-h6 font-semibold text-[var(--color-text-primary)] truncate">{o.name}</h3>
-                    <p className="text-size-caption text-[var(--color-text-secondary)] mt-1">
-                      {o._count.users} usuários · {o._count.boards} quadros · {o._count.teams} equipes
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <IconButton label="Editar" onClick={() => openEditOrg(o)}>
-                      <Pencil size={14} />
-                    </IconButton>
-                    <IconButton label="Excluir" danger onClick={() => setDeleteTarget({ kind: 'org', id: o.id, name: o.name })}>
-                      <Trash2 size={14} />
-                    </IconButton>
+              <Card key={o.id} border className="p-5">
+                <div className="min-w-0">
+                  <h3 className="text-[15px] font-bold text-[var(--color-text-primary)] truncate">{o.name}</h3>
+                  <p className="text-[12.5px] text-[var(--muted-soft)] mb-[14px] mt-1">
+                    {o._count.users} usuários · {o._count.boards} quadros · {o._count.teams} equipes
+                  </p>
+                  <div className="flex gap-2">
+                    <Button variant="secondary" size="sm" iconLeft={<Pencil size={14} />} onClick={() => openEditOrg(o)}>
+                      Editar
+                    </Button>
+                    <Button variant="danger" size="sm" iconLeft={<Trash2 size={14} />} onClick={() => setDeleteTarget({ kind: 'org', id: o.id, name: o.name })}>
+                      Excluir
+                    </Button>
                   </div>
                 </div>
               </Card>
@@ -540,46 +610,46 @@ export default function AdminPage() {
                 />
               </div>
               <div className="flex items-center gap-2 mt-5">
-                <Button variant="secondary" size="md" iconLeft={<RefreshCw size={16} />} onClick={loadTableRows}>
+                <Button variant="secondary" size="sm" iconLeft={<RefreshCw size={14} />} onClick={loadTableRows}>
                   Atualizar
                 </Button>
-                <Button variant="primary" size="md" iconLeft={<Plus size={16} />} onClick={openCreateRow}>
+                <Button variant="primary" size="sm" iconLeft={<Plus size={14} />} onClick={openCreateRow}>
                   Nova Linha
                 </Button>
               </div>
             </div>
-            <p className="text-size-caption text-[var(--color-text-secondary)] mt-2">
+            <p className="text-[13px] text-[var(--muted)] mt-2">
               {tableTotal} linha(s) — exibindo até 200.
             </p>
           </Card>
 
-          <Card border className="overflow-hidden">
+          <Card border padding="none" className="overflow-hidden">
             <div className="overflow-x-auto max-h-[420px] overflow-y-auto">
               {tableLoading ? (
                 <div className="flex items-center justify-center py-16">
                   <RefreshCw size={24} className="animate-spin text-[var(--color-text-secondary)]" />
                 </div>
               ) : tableRows.length === 0 ? (
-                <p className="py-10 text-center text-[var(--gray-400)] text-size-body-small">Nenhuma linha encontrada.</p>
+                <p className="py-10 text-center text-[var(--muted-soft)] text-size-body-small">Nenhuma linha encontrada.</p>
               ) : (
-                <table className="w-full text-left text-size-body-small">
+                <table className="w-full text-left text-size-body-small border-collapse">
                   <thead className="sticky top-0">
-                    <tr className="bg-[var(--gray-100)] text-size-caption text-[var(--gray-500)] uppercase">
+                    <tr className="text-[11px] font-bold uppercase tracking-[0.8px] text-[var(--muted-soft)]">
                       {rowColumns.map((col) => (
-                        <th key={col} className="px-4 py-3 font-medium whitespace-nowrap">{col}</th>
+                        <th key={col} className={`${thClass} whitespace-nowrap`}>{col}</th>
                       ))}
-                      <th className="px-4 py-3 font-medium text-right">Ações</th>
+                      <th className={`${thClass} text-right`}>Ações</th>
                     </tr>
                   </thead>
                   <tbody>
                     {tableRows.map((row) => (
-                      <tr key={String(row.id)} className="border-t border-[var(--gray-100)] hover:bg-[var(--gray-50)]">
+                      <tr key={String(row.id)} className={rowHoverClass}>
                         {rowColumns.map((col) => (
-                          <td key={col} className="px-4 py-3 text-[var(--gray-700)] whitespace-nowrap">
+                          <td key={col} className={`${tdClass} text-[var(--color-text-secondary)] whitespace-nowrap`}>
                             {formatCell(row[col])}
                           </td>
                         ))}
-                        <td className="px-4 py-3">
+                        <td className={tdClass}>
                           <div className="flex items-center justify-end gap-1">
                             <IconButton label="Editar" onClick={() => openEditRow(row)}>
                               <Pencil size={14} />
@@ -599,8 +669,11 @@ export default function AdminPage() {
 
           <Card border className="p-5">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-size-h6 font-semibold text-[var(--color-text-primary)]">Console SQL</h3>
-              <span className="flex items-center gap-1 text-size-caption text-[var(--color-danger-600)]">
+              <h3 className="flex items-center gap-2 text-size-h6 font-semibold text-[var(--color-text-primary)]">
+                <Terminal size={16} className="text-[var(--muted-soft)]" />
+                Console SQL
+              </h3>
+              <span className="flex items-center gap-1 text-size-caption text-[var(--color-warning)]">
                 <AlertTriangle size={14} />
                 Executa comandos crus no banco
               </span>
@@ -608,37 +681,37 @@ export default function AdminPage() {
             <textarea
               value={sqlQuery}
               onChange={(e) => setSqlQuery(e.target.value)}
-              rows={5}
+              rows={3}
               spellCheck={false}
               placeholder="SELECT * FROM users LIMIT 50;"
-              className="w-full px-3 py-2 rounded-[var(--radius-md)] border border-[var(--gray-300)] bg-[var(--color-bg-input)] text-size-body-small font-mono resize-y focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-900)]"
+              className="w-full px-[14px] py-[11px] rounded-[10px] border border-[var(--color-card-border)] bg-[var(--color-bg-input)] text-size-body-small font-mono resize-y focus:outline-none focus:border-[var(--color-focus-ring)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-focus-ring)_18%,transparent)]"
             />
             <div className="flex justify-end mt-3">
               <Button variant="primary" size="md" iconLeft={<Play size={16} />} onClick={handleRunSql} loading={sqlRunning}>
                 Executar
               </Button>
             </div>
-            {sqlError && <p className="mt-3 text-size-body-small text-[var(--color-danger-600)]">{sqlError}</p>}
+            {sqlError && <p className="mt-3 text-size-body-small text-[var(--color-danger)]">{sqlError}</p>}
             {sqlResult && (
               <div className="mt-4">
                 {sqlResult.readOnly ? (
-                  <div className="overflow-x-auto max-h-[320px] overflow-y-auto rounded-[var(--radius-md)] border border-[var(--gray-200)]">
+                  <div className="overflow-x-auto max-h-[320px] overflow-y-auto rounded-[var(--radius-md)] border border-[var(--color-card-border)]">
                     {!sqlResult.rows || sqlResult.rows.length === 0 ? (
-                      <p className="py-8 text-center text-[var(--gray-400)] text-size-body-small">Nenhuma linha retornada.</p>
+                      <p className="py-8 text-center text-[var(--muted-soft)] text-size-body-small">Nenhuma linha retornada.</p>
                     ) : (
-                      <table className="w-full text-left text-size-body-small">
+                      <table className="w-full text-left text-size-body-small border-collapse">
                         <thead className="sticky top-0">
-                          <tr className="bg-[var(--gray-100)] text-size-caption text-[var(--gray-500)] uppercase">
+                          <tr className="text-[11px] font-bold uppercase tracking-[0.8px] text-[var(--muted-soft)]">
                             {Object.keys(sqlResult.rows[0] ?? {}).map((col) => (
-                              <th key={col} className="px-4 py-3 font-medium whitespace-nowrap">{col}</th>
+                              <th key={col} className={`${thClass} whitespace-nowrap`}>{col}</th>
                             ))}
                           </tr>
                         </thead>
                         <tbody>
                           {sqlResult.rows.map((row, i) => (
-                            <tr key={i} className="border-t border-[var(--gray-100)]">
+                            <tr key={i} className={rowHoverClass}>
                               {Object.keys(row).map((col) => (
-                                <td key={col} className="px-4 py-3 text-[var(--gray-700)] whitespace-nowrap">{formatCell(row[col])}</td>
+                                <td key={col} className={`${tdClass} text-[var(--color-text-secondary)] whitespace-nowrap`}>{formatCell(row[col])}</td>
                               ))}
                             </tr>
                           ))}
@@ -647,7 +720,7 @@ export default function AdminPage() {
                     )}
                   </div>
                 ) : (
-                  <p className="text-size-body-small text-[var(--color-success-700)]">
+                  <p className="text-size-body-small text-[var(--color-success)]">
                     Query executada — {sqlResult.rowCount ?? 0} linha(s) afetada(s).
                   </p>
                 )}
@@ -725,7 +798,7 @@ export default function AdminPage() {
             spellCheck={false}
             className="w-full px-3 py-2 rounded-[var(--radius-md)] border border-[var(--gray-300)] bg-[var(--color-bg-input)] text-size-body-small font-mono resize-y focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-900)]"
           />
-          {rowError && <p className="text-size-body-small text-[var(--color-danger-600)]">{rowError}</p>}
+          {rowError && <p className="text-size-body-small text-[var(--color-danger)]">{rowError}</p>}
         </div>
         <div className="flex justify-end gap-3 mt-6" slot="footer">
           <Button variant="ghost" size="md" onClick={() => setRowModalOpen(false)}>Cancelar</Button>
@@ -749,6 +822,11 @@ export default function AdminPage() {
   )
 }
 
+const pagBtnClass =
+  'flex items-center justify-center min-w-[32px] h-8 px-2 rounded-[8px] border border-[var(--color-card-border)] bg-[var(--color-bg-surface)] text-[var(--muted)] text-[13px] font-semibold cursor-pointer transition-colors hover:border-[var(--color-brand)] hover:text-[var(--color-brand-hover)]'
+
+const pagBtnActive = 'bg-[var(--color-brand)] text-[var(--color-brand-ink)] border-[var(--color-brand)] hover:text-[var(--color-brand-ink)]'
+
 function IconButton({
   children,
   label,
@@ -765,8 +843,8 @@ function IconButton({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className={`w-8 h-8 flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--gray-200)] bg-[var(--color-bg-surface)] text-[var(--gray-500)] hover:text-[var(--color-primary-600)] hover:border-[var(--color-primary-300)] cursor-pointer transition-colors shadow-[var(--shadow-xs)] ${
-        danger ? 'hover:text-[var(--color-danger-600)] hover:border-[var(--color-danger-300)]' : ''
+      className={`w-[30px] h-[30px] flex items-center justify-center rounded-[8px] border border-[var(--color-card-border)] bg-[var(--color-bg-surface)] text-[var(--muted)] hover:text-[var(--color-text-primary)] cursor-pointer transition-colors ${
+        danger ? 'hover:text-[var(--color-danger)] hover:border-[var(--color-danger-bg)] hover:bg-[var(--color-danger-bg)]' : ''
       }`}
     >
       {children}
@@ -784,8 +862,8 @@ function formatCell(value: unknown): string {
 function ErrorStateInline({ message, onRetry }: { message: string; onRetry: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
-      <AlertTriangle size={28} className="text-[var(--color-danger-600)] mb-3" />
-      <p className="text-size-body-small text-[var(--gray-600)] mb-4">{message}</p>
+      <AlertTriangle size={28} className="text-[var(--color-danger)] mb-3" />
+      <p className="text-size-body-small text-[var(--color-text-secondary)] mb-4">{message}</p>
       <Button variant="primary" size="md" onClick={onRetry}>Tentar novamente</Button>
     </div>
   )

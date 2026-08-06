@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Button } from '../../shared/components/Button'
-import { Input } from '../../shared/components/Input'
+import { Link, useNavigate } from 'react-router-dom'
 import { useLoginController } from './LoginController'
-import { useNavigate } from 'react-router-dom'
 
+const authInputClass =
+  'w-full px-[14px] py-[11px] rounded-[10px] border border-[var(--color-card-border)] bg-[var(--color-bg-surface)] text-[14.5px] text-[var(--color-text-primary)] placeholder:text-[var(--muted-soft)] outline-none transition-all focus:border-[var(--color-focus-ring)] focus:shadow-[0_0_0_3px_color-mix(in_srgb,var(--color-focus-ring)_18%,transparent)]'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('admin@escola.edu')
@@ -27,64 +26,78 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-page)] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[var(--color-bg-page)] flex items-center justify-center p-[48px_20px]">
       <div className="w-full max-w-[420px]">
-        <div className="bg-white rounded-[16px] p-[40px_32px] shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
-          {/* Logo */}
-          <div className="flex flex-col items-center mb-6">
-            <div className="w-[72px] h-[72px] rounded-[16px] bg-[var(--color-brand)] flex items-center justify-center mb-3">
-              <span className="text-[#1B2452] font-extrabold text-[22px] leading-none">CA3</span>
+        <div className="w-full max-w-[420px] bg-[var(--color-bg-surface)] border border-[var(--color-card-border)] rounded-[16px] shadow-[var(--shadow-md)] p-[40px_36px]">
+          <div className="flex flex-col items-center gap-3 mb-7">
+            <div className="w-[72px] h-[72px] rounded-[14px] bg-[var(--color-brand)] flex items-center justify-center">
+              <span className="text-[var(--color-brand-ink)] font-extrabold text-[20px] leading-none">CA3</span>
             </div>
-            <h1 className="text-[20px] font-bold text-[var(--color-text-primary)]">CA3 Planner</h1>
-            <p className="text-[13px] text-[#6B7280] mt-0.5">Pedagógico</p>
+            <div className="text-center">
+              <h1 className="text-[22px] font-extrabold text-[var(--color-text-primary)] leading-tight">CA3 Planner</h1>
+              <p className="text-[12.5px] text-[var(--muted-soft)] mt-0.5">Pedagógico</p>
+            </div>
           </div>
 
-          <h2 className="text-[22px] font-bold text-[var(--color-text-primary)] mb-5 text-center">Entrar</h2>
+          <h2 className="text-[20px] font-bold text-[var(--color-text-primary)] mb-5 text-center">Entrar</h2>
 
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={onSubmit}>
             {error && (
-              <div className="p-3 rounded-[8px] bg-[var(--color-danger-100)] text-size-body-small text-[var(--color-danger-600)]">
+              <div className="p-3 rounded-[10px] bg-[var(--color-danger-bg)] text-size-body-small text-[var(--color-danger)] mb-4">
                 {error}
               </div>
             )}
 
-            <Input
-              type="email"
-              label="E-mail"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="seu@email.com"
-              autoFocus
-            />
+            <div className="mb-4">
+              <label htmlFor="login-email" className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">
+                E-mail
+              </label>
+              <input
+                id="login-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="seu@email.com"
+                autoFocus
+                className={authInputClass}
+              />
+            </div>
 
-            <div style={{ marginBottom: '16px' }}>
-              <label className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">Senha</label>
+            <div className="mb-4">
+              <label htmlFor="login-password" className="block text-[13px] font-semibold text-[var(--color-text-secondary)] mb-[6px]">
+                Senha
+              </label>
               <div className="relative">
                 <input
+                  id="login-password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Sua senha"
-                  className="w-full h-[44px] px-[14px] pr-10 rounded-[8px] border border-[#E5E7EB] bg-white text-[14px] text-[var(--color-text-primary)] placeholder:text-[#9CA3AF] outline-none transition-all focus:border-[#4F5FE0] focus:shadow-[0_0_0_3px_rgba(79,95,224,0.15)]"
+                  className={`${authInputClass} pr-10`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#4B5563] cursor-pointer"
+                  aria-label="Mostrar senha"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--muted-soft)] hover:text-[var(--color-text-primary)] cursor-pointer"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
             </div>
 
-            <Button type="submit" variant="primary" size="md" fullWidth>
+            <button
+              type="submit"
+              className="w-full py-[12px] rounded-[10px] bg-[var(--color-brand)] text-[var(--color-brand-ink)] text-[15px] font-bold mt-2 hover:bg-[var(--color-brand-bright)] transition-colors cursor-pointer"
+            >
               Entrar
-            </Button>
+            </button>
           </form>
 
-          <p className="text-[13px] text-[#6B7280] text-center mt-6">
+          <p className="text-[14px] text-[var(--muted)] text-center mt-5">
             Não tem conta?{' '}
-            <Link to="/registrar" className="text-[#4F5FE0] hover:underline font-medium">
+            <Link to="/registrar" className="text-[var(--color-info)] font-semibold hover:underline">
               Registre-se
             </Link>
           </p>

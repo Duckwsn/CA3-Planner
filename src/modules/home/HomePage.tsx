@@ -215,7 +215,7 @@ function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
 
 function HeroSection() {
   return (
-    <section className="min-h-[640px] flex items-center pt-[72px] bg-gradient-to-br from-[var(--color-sidebar-bg)] to-[var(--color-ca3-navy-900)]">
+    <section className="min-h-[calc(100vh)] flex items-center pt-[72px] bg-gradient-to-br from-[var(--color-sidebar-bg)] to-[var(--color-ca3-navy-900)]">
       <div className="w-full max-w-[1440px] mx-auto px-5 lg:px-8 py-20 lg:py-0">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <div className="max-lg:text-center">

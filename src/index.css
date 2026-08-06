@@ -223,50 +223,56 @@
 
 /* Dark theme */
 [data-theme="dark"] {
-  --bg-app: #12162E;
-  --bg-sidebar: #0F1330;
-  --bg-card: #1A1F3D;
-  --bg-card-hover: #212752;
-  --border-color: #2A3159;
-  --text-primary: #FFFFFF;
-  --text-secondary: #D1D5DB;
-  --text-muted: #7B8199;
-  --icon-bg: #232A52;
-  --icon-color: #8CA0F0;
-  --progress-track: #2A3159;
-  --progress-fill: #6C7DF0;
-  --sidebar-item-text: #C7CCE0;
+  --bg-app: #0b1220;
+  --bg-sidebar: #0d1626;
+  --bg-card: #131c2e;
+  --bg-card-hover: #1a2540;
+  --border-color: #1e2b44;
+  --text-primary: #e6ecf5;
+  --text-secondary: #8fa0b5;
+  --text-muted: #64748b;
+  --icon-bg: #1a2540;
+  --icon-color: #93c5fd;
+  --progress-track: #1e2b44;
+  --progress-fill: #4f6fc4;
+  --sidebar-item-text: #c7ccde;
   --sidebar-item-active-bg: #f59e0b;
-  --sidebar-item-active-text: #12162E;
+  --sidebar-item-active-text: #0f1f3d;
 
-  --color-sidebar-bg: #0F1330;
+  --color-sidebar-bg: #0d1626;
   --color-sidebar-item-active-bg: #f59e0b;
-  --color-sidebar-item-active-text: #12162E;
-  --color-sidebar-item-inactive: #C7CCE0;
+  --color-sidebar-item-active-text: #0f1f3d;
+  --color-sidebar-item-inactive: #c7ccde;
   --color-sidebar-logo-bg: #f59e0b;
 
-  --color-bg-page: #12162E;
-  --color-content-bg: #12162E;
-  --color-bg-surface: #1A1F3D;
-  --color-bg-card: #1A1F3D;
-  --color-bg-modal: #1A1F3D;
-  --color-bg-input: #232A52;
-  --color-bg-subtle: #232A52;
+  --color-bg-page: #0b1220;
+  --color-content-bg: #0b1220;
+  --color-bg-surface: #131c2e;
+  --color-bg-card: #131c2e;
+  --color-bg-modal: #131c2e;
+  --color-bg-input: #1a2540;
+  --color-bg-subtle: #1a2540;
 
-  --color-card-border: #2A3159;
-  --color-card-bg: #1A1F3D;
+  --color-card-border: #1e2b44;
+  --color-card-bg: #131c2e;
 
-  --color-text-primary: #FFFFFF;
-  --color-text-secondary: #D1D5DB;
+  --kanban-track: #1a2540;
+  --card-elevated: #1d2d4e;
+  --card-elevated-border: #2e4168;
 
-  --color-progress-track: #2A3159;
-  --color-progress-fill: #6C7DF0;
+  --color-text-primary: #e6ecf5;
+  --color-text-secondary: #8fa0b5;
+  --muted: #8fa0b5;
+  --muted-soft: #64748b;
 
-  --color-topbar-border: #2A3159;
+  --color-progress-track: #1e2b44;
+  --color-progress-fill: #4f6fc4;
 
-  --color-border-light: #2A3159;
-  --color-icon-bg: #232A52;
-  --color-border-light: #2A3159;
+  --color-topbar-border: #1e2b44;
+
+  --color-border-light: #1e2b44;
+  --color-icon-bg: #1a2540;
+  --color-border-light: #1e2b44;
 
   --gray-50: #1A1F3D;
   --gray-100: #232A52;

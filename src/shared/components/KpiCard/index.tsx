@@ -1,29 +1,34 @@
-import { Card } from '../Card'
 import type { KpiCardProps } from './KpiCard.types'
 
-export function KpiCard({ icon, title, value, variation, variationType = 'positive' }: KpiCardProps) {
+const toneClasses: Record<string, string> = {
+  blue: 'bg-[var(--color-info-bg)] text-[var(--color-info)]',
+  indigo: 'bg-[var(--color-purple-bg)] text-[var(--color-purple)]',
+  green: 'bg-[var(--color-success-bg)] text-[var(--color-success)]',
+  red: 'bg-[var(--color-danger-bg)] text-[var(--color-danger)]',
+  amber: 'bg-[var(--color-brand-soft)] text-[var(--color-brand-hover)]',
+}
+
+export function KpiCard({ icon, title, value, variation, variationType = 'positive', tone = 'blue' }: KpiCardProps) {
   return (
-      <Card padding="md" className="border border-[var(--border-color,var(--color-card-border))] shadow-[var(--shadow-sm)]">
-      <div className="flex items-center gap-3">
-        <div className="w-12 h-12 rounded-[var(--radius-lg)] bg-[var(--icon-bg,var(--color-primary-50))] flex items-center justify-center text-[var(--icon-color,var(--color-primary-600))] shrink-0">
-          {icon}
-        </div>
-        <div className="min-w-0">
-          <p className="text-size-caption text-[var(--color-text-secondary)] uppercase tracking-wider font-medium truncate">
-            {title}
-          </p>
-          <div className="flex items-baseline gap-2">
-            <span className="text-size-h4 font-bold text-[var(--color-text-primary)] leading-none tabular-nums">
-              {value}
+    <div className="flex items-center gap-[18px] bg-[var(--color-bg-card)] border border-[var(--color-card-border)] rounded-[var(--radius-lg)] px-6 py-[22px] shadow-[var(--shadow-sm)]">
+      <div className={`w-12 h-12 rounded-[11px] flex items-center justify-center text-[19px] shrink-0 ${toneClasses[tone]}`}>
+        {icon}
+      </div>
+      <div className="flex flex-col gap-[3px] min-w-0">
+        <p className="text-[10.5px] font-bold uppercase tracking-[1px] text-[var(--muted-soft)] truncate">
+          {title}
+        </p>
+        <div className="flex items-baseline gap-2">
+          <span className="text-[32px] font-extrabold leading-none tabular-nums text-[var(--color-text-primary)]">
+            {value}
+          </span>
+          {variation && (
+            <span className={`text-[12.5px] font-semibold ${variationType === 'positive' ? 'text-[var(--color-success)]' : 'text-[var(--color-danger)]'}`}>
+              {variation}
             </span>
-            {variation && (
-              <span className={`text-size-caption font-medium ${variationType === 'positive' ? 'text-[var(--color-success-600)]' : 'text-[var(--color-danger-600)]'}`}>
-                {variation}
-              </span>
-            )}
-          </div>
+          )}
         </div>
       </div>
-    </Card>
+    </div>
   )
 }

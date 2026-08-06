@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Archive } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { Button } from '../../shared/components/Button'
 import { Modal } from '../../shared/components/Modal'
 import { LoadingState } from '../../shared/components/LoadingState'
@@ -75,14 +75,10 @@ export default function ArchivedTasksPage() {
 
   return (
     <div>
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="sm" iconLeft={<ArrowLeft size={16} />} onClick={() => navigate(-1)}>
+      <div className="flex items-center gap-3.5 mb-6 flex-wrap">
+        <Button variant="secondary" size="sm" iconLeft={<ArrowLeft size={16} />} onClick={() => navigate(-1)}>
           Voltar
         </Button>
-        <div className="flex items-center gap-2">
-          <Archive size={20} className="text-[var(--gray-500)]" />
-          <h1 className="text-size-h4 font-semibold text-[var(--gray-900)]">Tarefas Arquivadas</h1>
-        </div>
       </div>
 
       {tasks.length === 0 ? (
@@ -91,27 +87,29 @@ export default function ArchivedTasksPage() {
         categories.map((cat) => {
           const catTasks = grouped[cat]!
           return (
-          <div key={cat} className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
+          <div key={cat} className="mb-7">
+            <div className="flex items-center gap-2.5 mb-3">
               <Badge variant={getPriorityVariant(cat as any)}>{getPriorityLabel(cat as any)}</Badge>
-              <span className="text-size-caption text-[var(--gray-400)]">{catTasks.length} tarefa(s)</span>
+              <span className="text-[13px] text-[var(--muted-soft)] tabular-nums">
+                {catTasks.length} {catTasks.length === 1 ? 'tarefa' : 'tarefas'}
+              </span>
             </div>
-            <div className="space-y-2">
+            <div className="bg-[var(--color-bg-card)] border border-[var(--color-card-border)] rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] overflow-hidden">
               {catTasks.map((t) => (
                 <div
                   key={t.id}
                   onClick={() => setSelectedTask(t)}
-                  className="flex items-center justify-between p-3 rounded-[var(--radius-md)] bg-[var(--gray-50)] border border-[var(--gray-200)] cursor-pointer hover:border-[var(--gray-300)] transition-colors"
+                  className="flex items-center justify-between gap-4 px-5 py-[14px] border-b border-[var(--color-card-border)] last:border-b-0 cursor-pointer hover:bg-[var(--color-bg-subtle)] transition-colors"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="text-size-body-small font-medium text-[var(--gray-900)] truncate">{t.title}</p>
-                    <p className="text-size-caption text-[var(--gray-500)]">
+                    <p className="text-size-body-small font-semibold text-[var(--color-text-primary)] truncate">{t.title}</p>
+                    <p className="text-[12.5px] text-[var(--muted-soft)] mt-0.5">
                       {t.board.title} {t.assignee ? `• ${t.assignee}` : ''}
                     </p>
                   </div>
-                  <div className="text-size-caption text-[var(--gray-400)] shrink-0 ml-4">
-                    {t.archivedAt ? new Date(t.archivedAt).toLocaleDateString('pt-BR') : ''}
-                  </div>
+                  <span className="text-[12.5px] text-[var(--muted)] whitespace-nowrap shrink-0 ml-4">
+                    {t.archivedAt ? `Arquivada em ${new Date(t.archivedAt).toLocaleDateString('pt-BR')}` : ''}
+                  </span>
                 </div>
               ))}
             </div>
